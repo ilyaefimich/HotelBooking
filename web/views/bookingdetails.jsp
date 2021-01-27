@@ -10,11 +10,6 @@
     <title>Booking details</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css"
           integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
-
-    <!-- Custom styles for this template -->
-    <link href="%D0%9F%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D1%81%D0%BA%D0%B0%D1%8F%20%D1%84%D0%BE%D1%80%D0%BC%D0%B0%20Checkout%20example%20for%20Bootstrap%20(BS%204.0)_files/form-validation.css"
-          rel="stylesheet">
-
 </head>
 <body class="bg-light">
 <jsp:include page="/views/header.jsp"/>
@@ -75,14 +70,15 @@
     <form class="form-inline needs-validation" method="post" action="./controller?command=updatebooking&mode=create">
         </c:if>
 
-        <input type="number" class="custom-control-input" name="guestid" id="guestid" value="${loggeduser.userId}" hidden="true">
+        <input type="number" class="custom-control-input" name="guestid" id="guestid" value="${loggeduser.userId}"
+               hidden="true">
         <div class="col-md-8 order-md-1"
              style="padding-left: 30rem; padding-right: 10rem; padding-top: 10rem; padding-bottom: 10rem">
             <div class="block">
                 <h4 class="mb-3">Booking Information</h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="checkin">Check In</label>
+                        <label for="checkin"><fmt:message key="page.booking_checkin"/></label>
                         <c:if test="${error == 123}">
                             <c:set var="isCheckinInvalid" scope="page" value="is-invalid"/>
                             <c:set var="checkinValidationMessage" scope="page"
@@ -99,7 +95,7 @@
 
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="checkout">Check Out</label>
+                        <label for="checkout"><fmt:message key="page.booking_checkout"/></label>
                         <input name="checkout" type="date" class="form-control" id="checkout" placeholder="10.01.2021"
                                required="required"
                                value="${booking.checkOutDate}" <c:out value="${isReadonly}"/>>
@@ -114,7 +110,7 @@
                            hidden="true">
 
                     <div class="col-md-6 mb-3">
-                        <label for="adults">Adults</label>
+                        <label for="adults"><fmt:message key="page.booking_adults"/></label>
                         <input name="adults" type="number" class="form-control" id="adults" placeholder=""
                                required="required"
                                value="${booking.adultsCount}" <c:out value="${isReadonly}"/>>
@@ -123,62 +119,75 @@
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="children">Children</label>
-                        <input type="number" class="form-control" name="children" id="children" placeholder="" required="required"
+                        <label for="children"><fmt:message key="page.booking_children"/></label>
+                        <input type="number" class="form-control" name="children" id="children" placeholder=""
+                               required="required"
                                value="${booking.childrenCount}" <c:out value="${isReadonly}"/>>
                         <div class="invalid-feedback">
                             Valid number is required.
                         </div>
                     </div>
                     <div class="col-md-5 mb-3">
-                        <select class="form-select" name="roomtype" id="roomtype" required="required" <c:out value="${isDisabled}"/>>
+                        <label for="roomtype"><fmt:message key="page.booking_room_type"/></label>
+                        <select class="form-select" name="roomtype" id="roomtype" required="required" <c:out
+                                value="${isDisabled}"/>>
                             <option value="1"
                                     <c:if test="${booking.getRoomType().roomTypeId == 1}">
                                         selected="selected"
                                     </c:if>
-                            >Single</option>
+                            >Single
+                            </option>
                             <option value="2"
                                     <c:if test="${booking.getRoomType().roomTypeId == 2}">
                                         selected="selected"
                                     </c:if>
-                            >Double</option>
+                            >Double
+                            </option>
                             <option value="3"
                                     <c:if test="${booking.getRoomType().roomTypeId == 3}">
                                         selected="selected"
                                     </c:if>
-                            >Triple</option>
+                            >Triple
+                            </option>
                             <option value="4"
                                     <c:if test="${booking.getRoomType().roomTypeId == 4}">
                                         selected="selected"
                                     </c:if>
-                            >Quad</option>
+                            >Quad
+                            </option>
                             <option value="5"
                                     <c:if test="${booking.getRoomType().roomTypeId == 5}">
                                         selected="selected"
                                     </c:if>
-                            >Queen</option>
+                            >Queen
+                            </option>
                             <option value="6"
                                     <c:if test="${booking.getRoomType().roomTypeId == 6}">
                                         selected="selected"
                                     </c:if>
-                            >King</option>
+                            >King
+                            </option>
                             <option value="7"
                                     <c:if test="${booking.getRoomType().roomTypeId == 7}">
                                         selected="selected"
                                     </c:if>
-                            >Twin</option>
+                            >Twin
+                            </option>
                             <option value="8"
                                     <c:if test="${booking.getRoomType().roomTypeId == 8}">
                                         selected="selected"
                                     </c:if>
-                            >Studio</option>
+                            >Studio
+                            </option>
                         </select>
                         <div class="invalid-feedback">
                             Please select a valid room type.
                         </div>
                     </div>
                     <div class="col-md-5 mb-3">
-                        <select class="form-select" name="room" id="room" required="required" <c:out value="${isDisabled}"/> <c:out value="${isRoomsDisabled}"/>>
+                        <label for="room"><fmt:message key="page.booking_room"/></label>
+                        <select class="form-select" name="room" id="room" required="required" <c:out
+                                value="${isDisabled}"/> <c:out value="${isRoomsDisabled}"/>>
                             <label for="room">Avaiable Rooms</label>
                             <c:forEach var="room" items="${rooms}" varStatus="index">
                                 <option id="<c:out value="${room.roomId}"/>"><c:out value="${room.name}"/></option>
@@ -371,7 +380,7 @@
                     <button class="btn btn-primary btn-lg btn-block" type="submit">Confirm booking</button>
                 </c:if>
             </c:if>
-            <a href="./controller?command=bookings" id="cancel" name="cancel" class="btn btn-primary btn-lg btn-block">Cancel</a>
+            <a href="./controller?command=getbookings" id="cancel" name="cancel" class="btn btn-primary btn-lg btn-block">Cancel</a>
         </div>
     </form>
 
@@ -397,17 +406,26 @@
                 })
         })()
 
-        $('#roomtype').change(function(event) {
-            var $location=$("select#roomtype").val();
-            $.get('SvrController',{location:$location},function(responseJson) {
+        $('#roomtype').change(function (event) {
+            var $location = $("select#roomtype").val();
+            $.get('SvrController', {location: $location}, function (responseJson) {
                 var $select = $('#svrAddr');
                 $select.find('option').remove();
-                $.each(responseJson, function(index, name) {
+                $.each(responseJson, function (index, name) {
                     $('<option>').val(index).text(name).appendTo($select);
                 });
-            },'json');
+            }, 'json');
         });
     </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+            integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+            crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+            integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+            crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+            integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+            crossorigin="anonymous"></script>
 
 </body>
 </html>

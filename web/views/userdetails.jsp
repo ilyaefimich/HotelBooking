@@ -11,10 +11,6 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/5.0.0-alpha2/css/bootstrap.min.css"
           integrity="sha384-DhY6onE6f3zzKbjUPRc2hOzGAdEf4/Dz+WJwBvEYL/lkkIsI3ihufq9hk9K4lVoK" crossorigin="anonymous">
 
-    <!-- Custom styles for this template -->
-    <link href="%D0%9F%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D1%81%D0%BA%D0%B0%D1%8F%20%D1%84%D0%BE%D1%80%D0%BC%D0%B0%20Checkout%20example%20for%20Bootstrap%20(BS%204.0)_files/form-validation.css"
-          rel="stylesheet">
-
 </head>
 <body class="bg-light">
 <jsp:include page="/views/header.jsp"/>
@@ -60,12 +56,14 @@
                                 <c:if test="${user.getUserRole().roleId == 1}">
                                     selected="selected"
                                 </c:if>
-                        >Guest</option>
+                        >Guest
+                        </option>
                         <option value="2"
                                 <c:if test="${user.getUserRole().roleId == 2}">
                                     selected="selected"
                                 </c:if>
-                        >Administrator</option>
+                        >Administrator
+                        </option>
                     </select>
                     <div class="invalid-feedback">
                         Please select a valid city.
@@ -166,6 +164,14 @@
                 })
         })()
     </script>
-
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
+                integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
+                crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+                integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+                crossorigin="anonymous"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
+                integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
+                crossorigin="anonymous"></script>
 </body>
 </html>

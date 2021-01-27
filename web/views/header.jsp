@@ -8,7 +8,7 @@
     <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="/"><fmt:message key="page.home"/></a>
+                <a class="nav-link" href="./controller?command=getbookings"><fmt:message key="page.home"/></a>
             </li>
 
             <li class="nav-item">
@@ -21,9 +21,6 @@
                 <li class="nav-item">
                     <a class="nav-link" href="./controller?command=getrooms"><fmt:message key="page.rooms"/></a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="./controller?command=bookingdetails&mode=create"><fmt:message key="page.add_booking"/></a>
-                </li>
             </c:if>
         </ul>
         <form class="form-inline">
@@ -33,12 +30,12 @@
                         <button class="nav-link btn btn-outline-info my-2 my-sm-0 btn-secondary dropdown-toggle"
                                 type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
                                 aria-expanded="false">
-                            ${locale.getDisplayLanguage()}
+                            ${locale.getDisplayLanguage(locale)}
                         </button>
                         <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                             <a class="dropdown-item" href="./controller?command=changelocale&lang=rus">русский</a><br>
                             <a class="dropdown-item" href="./controller?command=changelocale&lang=eng">english</a><br>
-                            <a class="dropdown-item" href="./controller?command=changelocale&lang=be">беларускi</a><br>
+                            <a class="dropdown-item" href="./controller?command=changelocale&lang=bel">беларускi</a><br>
                         </div>
                     </div>
                 </li>
