@@ -8,6 +8,7 @@ import com.epam.jwd.finaltask.service.impl.UserServiceImpl;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Locale;
 
 public class LoginCommand extends AbstractCommand {
 
@@ -19,10 +20,12 @@ public class LoginCommand extends AbstractCommand {
         String login = request.getParameter("user-login");
         String password = request.getParameter("user-password");
         User user = userService.getUserByNameAndPassword(login, password);
+        request.getSession().setAttribute("locale", new Locale("en","EN"));
 
         if (user != null) {
             request.getSession().setAttribute(Attributes.LOGGEDUSER, user);
-            return Pages.BOOKINGS;
+            return Pages.GETBOOKINGS;
+
         } else if (login != null || password != null){
             request.setAttribute("error", "Incorrect user name or password, please, try again.");
             return Pages.LOGIN;

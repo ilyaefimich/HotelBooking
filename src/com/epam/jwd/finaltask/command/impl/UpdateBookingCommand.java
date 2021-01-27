@@ -23,19 +23,19 @@ public class UpdateBookingCommand extends AbstractCommand {
         int adultsCount = Integer.parseInt(request.getParameter("adults"));
         int childrenCount = Integer.parseInt(request.getParameter("children"));
         String comment = request.getParameter("comment");
-        int roomTypeId = Integer.parseInt(request.getParameter("roomtype"));
         int guestId = Integer.parseInt(request.getParameter("guestid"));
 //TODO add comment, room, payment info,
         try {
 
             if (mode.equals("create")) {
+                int roomTypeId = Integer.parseInt(request.getParameter("roomtype"));
                 bookingService.create(checkin, checkout, adultsCount, childrenCount, comment, roomTypeId, guestId);
             } else if (mode.equals("update")) {
                 int newStatus = Integer.parseInt(request.getParameter("newStatus"));
                 int bookingId = Integer.parseInt(request.getParameter("bookingid"));
                 bookingService.update(bookingId, checkin, checkout, adultsCount, null, null, null, null, newStatus);
             }
-            return Pages.BOOKINGS;
+            return Pages.GETBOOKINGS;
         } catch (ValidationError ve) {
             request.setAttribute("error", ve.getErrorCode());
             return Pages.BOOKINGDETAILS;

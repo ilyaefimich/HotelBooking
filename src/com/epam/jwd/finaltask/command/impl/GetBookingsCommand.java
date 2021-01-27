@@ -20,7 +20,7 @@ public class GetBookingsCommand extends AbstractCommand {
 
         List<Booking> bookings = bookingService.getBookings();
         request.setAttribute(Attributes.BOOKINGS, bookings);
-        return Pages.BOOKINGS;
+        return Pages.GETBOOKINGS;
 
     }
 }

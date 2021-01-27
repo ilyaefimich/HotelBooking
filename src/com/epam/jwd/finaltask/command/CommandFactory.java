@@ -14,12 +14,7 @@ public enum CommandFactory {
             return new LogoutCommand();
         }
     },
-    REGISTRATION {
-        public AbstractCommand createCommand() {
-            return new RegistrationCommand();
-        }
-    },
-    BOOKINGS {
+    GETBOOKINGS {
         public AbstractCommand createCommand() {
             return new GetBookingsCommand();
         }

@@ -17,6 +17,6 @@ public class DeleteBookingCommand extends AbstractCommand {
 
         int bookingid  = Integer.parseInt(request.getParameter("bookingid"));
         bookingService.delete(bookingid);
-        return Pages.BOOKINGS;
+        return Pages.GETBOOKINGS;
     }
 }

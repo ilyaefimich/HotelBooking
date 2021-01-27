@@ -1,7 +1,7 @@
 package com.epam.jwd.finaltask.command;
 
 public interface Pages {
-    String BOOKINGS = "/views/bookings.jsp";
+    String GETBOOKINGS = "/views/bookings.jsp";
     String BOOKINGDETAILS = "/views/bookingdetails.jsp";
     String USERS = "/views/users.jsp";
     String USERDETAILS = "/views/userdetails.jsp";

@@ -11,6 +11,7 @@ public class ChangeLocaleCommand extends AbstractCommand {
 
     private static final String RUS = "rus";
     private static final String ENG = "eng";
+    private static final String BEL = "bel";
 
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
@@ -18,9 +19,13 @@ public class ChangeLocaleCommand extends AbstractCommand {
         String lang = request.getParameter("lang");
         if (lang.equalsIgnoreCase(RUS)) {
             request.getSession().setAttribute("locale", new Locale("ru","RU"));
-        } else {
+        } else if (lang.equalsIgnoreCase(ENG)) {
             request.getSession().setAttribute("locale", new Locale("en","EN"));
+        } else if (lang.equalsIgnoreCase(BEL)) {
+            request.getSession().setAttribute("locale", new Locale("be","BY"));
+        } else {
+            throw new IllegalArgumentException("Such a language is not supported! lang=" + lang);
         }
-        return Pages.BOOKINGS;
+        return Pages.GETBOOKINGS;
     }
 }
