@@ -1,0 +1,17 @@
+<taglib>
+    <tlib-version>1.0</tlib-version>
+    <jsp-version>2.0</jsp-version>
+    <short-name>Show Error Message</short-name>
+
+    <tag>
+        <name>error</name>
+        <tag-class>com.epam.jwd.finaltask.tags.ShowErrorTag</tag-class>
+        <body-content>scriptless</body-content>
+
+        <attribute>
+            <name>errorMessage</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
+    </tag>
+</taglib>
