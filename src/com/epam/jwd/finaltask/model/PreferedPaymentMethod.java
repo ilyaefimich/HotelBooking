@@ -1,14 +1,23 @@
 package com.epam.jwd.finaltask.model;
 
-import java.time.LocalDate;
+import java.util.Objects;
 
 public class PreferedPaymentMethod {
     private int preferedPaymentMethodId;
     private String name;
     private String cardholderName;
-    private LocalDate expirationDate;
+    private String expirationDate;
     private int cardNumber;
     private int csvCode;
+    private int PaymentMethodId;
+
+    public int getPaymentMethodId() {
+        return PaymentMethodId;
+    }
+
+    public void setPaymentMethodId(int paymentMethodId) {
+        PaymentMethodId = paymentMethodId;
+    }
 
     public String getCardholderName() {
         return cardholderName;
@@ -18,11 +27,11 @@ public class PreferedPaymentMethod {
         this.cardholderName = cardholderName;
     }
 
-    public LocalDate getExpirationDate() {
+    public String getExpirationDate() {
         return expirationDate;
     }
 
-    public void setExpirationDate(LocalDate expirationDate) {
+    public void setExpirationDate(String expirationDate) {
         this.expirationDate = expirationDate;
     }
 
@@ -62,10 +71,10 @@ public class PreferedPaymentMethod {
     public String toString() {
         return "PreferedPaymentMethod{" +
                 "name= '" + name + '\'' +
-                "cardHolderName'"+cardholderName+
-                "expirationDate'"+expirationDate+
-                "cardNumber'"+cardNumber+
-                "csvCode" +csvCode+
+                "cardHolderName'" + cardholderName +
+                "expirationDate'" + expirationDate +
+                "cardNumber'" + cardNumber +
+                "csvCode" + csvCode +
                 "}";
     }
 
@@ -73,19 +82,18 @@ public class PreferedPaymentMethod {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-
-        PreferedPaymentMethod preferedPaymentMethod = (PreferedPaymentMethod) o;
-        if (preferedPaymentMethod != null ? !preferedPaymentMethod.equals(preferedPaymentMethod.name) : preferedPaymentMethod.name != null) return false;
-        return name != null ? name.equals(preferedPaymentMethod.name) : preferedPaymentMethod.name == null;
-
+        PreferedPaymentMethod that = (PreferedPaymentMethod) o;
+        return preferedPaymentMethodId == that.preferedPaymentMethodId &&
+                cardNumber == that.cardNumber &&
+                csvCode == that.csvCode &&
+                PaymentMethodId == that.PaymentMethodId &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(cardholderName, that.cardholderName) &&
+                Objects.equals(expirationDate, that.expirationDate);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 32 * result + (name != null ? name.hashCode() : 0);
-        return result;
-
-
+        return Objects.hash(preferedPaymentMethodId, name, cardholderName, expirationDate, cardNumber, csvCode, PaymentMethodId);
     }
 }

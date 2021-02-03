@@ -1,11 +1,28 @@
 package com.epam.jwd.finaltask.model;
 
 public class Guest {
+    private int guestId;
     private String name;
     private String mobile;
     private String email;
     private String address;
+    private int userId;
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
+    public int getGuestId() {
+        return guestId;
+    }
+
+    public void setGuestId(int guestId) {
+        this.guestId = guestId;
+    }
 
     public String getName() {
         return name;

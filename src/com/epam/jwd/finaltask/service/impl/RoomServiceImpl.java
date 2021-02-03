@@ -3,8 +3,8 @@ package com.epam.jwd.finaltask.service.impl;
 import com.epam.jwd.finaltask.dao.IRoomDao;
 import com.epam.jwd.finaltask.dao.impl.RoomDaoImpl;
 import com.epam.jwd.finaltask.exception.DAOException;
-import com.epam.jwd.finaltask.exception.ValidationError;
-import com.epam.jwd.finaltask.model.*;
+import com.epam.jwd.finaltask.model.RateType;
+import com.epam.jwd.finaltask.model.Room;
 import com.epam.jwd.finaltask.service.IRoomService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,15 +28,27 @@ public class RoomServiceImpl implements IRoomService {
     }
 
     @Override
-    public List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId, String checkinDate, String checkoutDate) {
+    public List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId,int rateTypeId, String checkinDate, String checkoutDate) {
         try {
-            return roomDao.getAvailableRoomsByRoomTypeAndDates(roomTypeId, checkinDate, checkoutDate);
+            return roomDao.getAvailableRoomsByRoomTypeAndDates(roomTypeId, rateTypeId, checkinDate, checkoutDate);
         } catch (DAOException e) {
             logger.error("Error when calling the method getAvailableRoomsByRoomTypeAndDates(): " +e.getMessage());
             e.printStackTrace();
         }
         return null;
     }
+
+    @Override
+    public List<RateType> getRateTypesByRoomType(int roomTypeId) {
+        try {
+            return roomDao.getRateTypesByRoomType(roomTypeId);
+        } catch (DAOException e) {
+            logger.error("Error when calling the method getRateTypesByRoomType(): " +e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     @Override
     public int update(int roomid, LocalDate checkInDate, LocalDate checkOutDate, int adultsCount, String guestName, String guestEmail, String guestMobile, String guestAddress, int newStatus) {
         try {

@@ -21,8 +21,7 @@ public class LoginCommand extends AbstractCommand {
         String password = request.getParameter("user-password");
         User user = userService.getUserByNameAndPassword(login, password);
         request.getSession().setAttribute("locale", new Locale("en","EN"));
-
-        if (user != null) {
+    if (user != null) {
             request.getSession().setAttribute(Attributes.LOGGEDUSER, user);
             return Pages.GETBOOKINGS;
 

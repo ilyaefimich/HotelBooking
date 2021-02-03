@@ -60,6 +60,15 @@ public enum CommandFactory {
     GETAVAILABLEROOM {
         public AbstractCommand createCommand(){ return new GetAvailableRoomCommand(); }
         },
+    SIGNUP {
+        public AbstractCommand createCommand(){ return new SignupCommand(); }
+    },
+    GETPROFILE {
+        public AbstractCommand createCommand(){ return new GetProfileCommand(); }
+    },
+    UPDATEPROFILE {
+        public AbstractCommand createCommand(){ return new UpdateProfileCommand(); }
+    },
     UPDATEBOOKING {
         public AbstractCommand createCommand() { return new UpdateBookingCommand(); }
     };

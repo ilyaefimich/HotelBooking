@@ -3,6 +3,12 @@ package com.epam.jwd.finaltask.model;
 import java.time.LocalDate;
 
 public class Message {
+    private int messageId;
+    private int bookingId;
+    private int userId;
+    private LocalDate createdAt;
+    private String message;
+
     public int getMessageId() {
         return messageId;
     }
@@ -43,9 +49,4 @@ public class Message {
         this.message = message;
     }
 
-    private int messageId;
-    private int bookingId;
-    private int userId;
-    private LocalDate createdAt;
-    private String message;
 }

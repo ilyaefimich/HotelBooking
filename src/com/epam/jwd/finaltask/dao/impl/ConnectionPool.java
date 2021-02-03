@@ -32,20 +32,13 @@ public class ConnectionPool {
 
 
     private ConnectionPool() {
-        //ResourceBundle resourceBundle = ResourceBundle.getBundle("configuration.database");
-
-/*
+        ResourceBundle resourceBundle = ResourceBundle.getBundle("resources.configuration.database");
         String DRIVER = resourceBundle.getString("db.driver");
         String URL = resourceBundle.getString("db.url");
         String LOGIN = resourceBundle.getString("db.login");
         String PASSWORD = resourceBundle.getString("db.password");
         int POOL_SIZE = Integer.valueOf(resourceBundle.getString("db.poolsize"));
-*/
-        String DRIVER = "com.mysql.jdbc.Driver";
-        String URL = "jdbc:mysql://localhost:3306/web?useUnicode=yes&characterEncoding=UTF-8&serverTimezone=UTC";
-        String LOGIN = "admin";
-        String PASSWORD = "admin";
-        int POOL_SIZE = 4;
+
         usedConnections = new ArrayBlockingQueue<>(POOL_SIZE);
         availableConnections = new ArrayBlockingQueue<>(POOL_SIZE);
         try {

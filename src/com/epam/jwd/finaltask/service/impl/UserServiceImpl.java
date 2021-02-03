@@ -3,9 +3,8 @@ package com.epam.jwd.finaltask.service.impl;
 import com.epam.jwd.finaltask.dao.IUserDao;
 import com.epam.jwd.finaltask.dao.impl.UserDaoImpl;
 import com.epam.jwd.finaltask.exception.DAOException;
-import com.epam.jwd.finaltask.model.Booking;
+import com.epam.jwd.finaltask.model.Guest;
 import com.epam.jwd.finaltask.model.User;
-import com.epam.jwd.finaltask.service.IBookingService;
 import com.epam.jwd.finaltask.service.IUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +22,14 @@ public class UserServiceImpl implements IUserService {
         } catch (DAOException e) {
             logger.error("Error when calling the method getUsers(): " + e.getMessage());
             e.printStackTrace();
+            throw new RuntimeException(e);
         }
-        return null;
     }
 
     @Override
-    public int create(String name, String pasword, int userRoleId) {
+    public int create(String name, String password, int userRoleId, String guestName, String mobile, String email, String address) {
         try {
-            return UserDao.create(name, pasword, userRoleId);
+            return UserDao.create(name, password, userRoleId, guestName, mobile, email, address);
         } catch (DAOException e) {
             logger.error("Error when calling the method createUsers(): " + e.getMessage());
             e.printStackTrace();
@@ -39,9 +38,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public int update(int userId, String name, String pasword, int userRoleId) {
+    public int update(int userId, String name, String password, int userRoleId, String guestName, String mobile, String email, String address) {
         try {
-            return UserDao.update(userId, name, pasword, userRoleId);
+            return UserDao.update(userId, name, password, userRoleId, guestName, mobile, email, address);
         } catch (DAOException e) {
             logger.error("Error when calling the method updateUsers(): " + e.getMessage());
             e.printStackTrace();
@@ -80,6 +79,16 @@ public class UserServiceImpl implements IUserService {
     public User getUserByNameAndPassword(String name, String password) {
         try {
             return UserDao.getUserByNameAndPassword(name, password);
+        } catch (DAOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    @Override
+    public Guest getGuestByUserId(int userId) {
+        try {
+            return UserDao.getGuestByUserId(userId);
         } catch (DAOException e) {
             e.printStackTrace();
         }

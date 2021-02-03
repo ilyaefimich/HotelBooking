@@ -1,9 +1,6 @@
 package com.epam.jwd.finaltask.filter;
 
 import com.epam.jwd.finaltask.command.impl.Attributes;
-import com.epam.jwd.finaltask.model.Booking;
-import com.epam.jwd.finaltask.service.IBookingService;
-import com.epam.jwd.finaltask.service.impl.BookingServiceImpl;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -11,7 +8,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.List;
 
 
 @WebFilter(filterName = "LoginFilter", urlPatterns = {"/*"}, dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST})
@@ -23,7 +19,7 @@ public class LoginFilter implements Filter {
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
         String param = request.getParameter("command");
-        if (param != null && param.equals("login")) {
+        if (param != null && (param.equals("login") || param.equals("signup"))) {
             filterChain.doFilter(request, response);
             return;
         }

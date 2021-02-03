@@ -15,8 +15,26 @@ public class Booking {
     private Guest guest;
     private Room offeredRoom;
     private List<Message> messages;
-    private PaymentMethod selectedPaymentMethod;
+    private PreferedPaymentMethod preferedPaymentMethod;
     private PaymentInfo paymentInfo;
+    private int price;
+    private RateType rateType;
+
+    public RateType getRateType() {
+        return rateType;
+    }
+
+    public void setRateType(RateType rateType) {
+        this.rateType = rateType;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
+    }
 
     public Guest getGuest() {
         return guest;
@@ -42,15 +60,17 @@ public class Booking {
         this.messages = messages;
     }
 
-    public PaymentMethod getSelectedPaymentMethod() {
-        return selectedPaymentMethod;
+    public PreferedPaymentMethod getPreferedPaymentMethod() {
+        return preferedPaymentMethod;
     }
 
-    public void setSelectedPaymentMethod(PaymentMethod selectedPaymentMethod) {
-        this.selectedPaymentMethod = selectedPaymentMethod;
+    public void setPreferedPaymentMethod(PreferedPaymentMethod preferedPaymentMethod) {
+        this.preferedPaymentMethod = preferedPaymentMethod;
     }
 
-
+    public PaymentInfo getPaymentInfo() {
+        return paymentInfo;
+    }
 
     public void setPaymentInfo(PaymentInfo paymentInfo) {
         this.paymentInfo = paymentInfo;

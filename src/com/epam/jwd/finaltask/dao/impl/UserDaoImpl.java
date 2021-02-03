@@ -20,11 +20,22 @@ public class UserDaoImpl implements IUserDao {
     private final static String INSERT_USER = "INSERT INTO `web`.`user` (`name`, `password`, `roleId`) " +
             "VALUES (?, ?, ?);";
 
+    private final static String INSERT_GUEST = "INSERT INTO `web`.`guest` (`name`, `mobile`, `email`, 'address', 'userid') " +
+            "VALUES (?, ?, ?, ?, ?);";
+
     private final static String UPDATE_USER = "UPDATE `web`.`user`\n" +
             "    SET\n" +
             "            name = ?,\n" +
             "            password = ?,\n" +
             "            roleId = ?\n" +
+            "    WHERE userId = ?;";
+
+    private final static String UPDATE_GUEST = "UPDATE `web`.`guest`\n" +
+            "    SET\n" +
+            "            name = ?,\n" +
+            "            mobile = ?,\n" +
+            "            email = ?,\n" +
+            "            address = ?\n" +
             "    WHERE userId = ?;";
 
     private final static String SELECT_USERS =
@@ -43,6 +54,36 @@ public class UserDaoImpl implements IUserDao {
                     "FROM web.user u\n" +
                     "LEFT OUTER JOIN UserRole ur ON ur.roleId = u.roleId\n" +
                     "WHERE u.userId = ?;";
+
+    private final static String SELECT_GUEST_BY_USER_ID =
+            "SELECT g.GuestId, g.name, g.mobile, g.email, g.address\n" +
+                    "FROM web.guest g\n" +
+                    "WHERE g.userId = ?";
+
+
+    @Override
+    public Guest getGuestByUserId(int userId) throws DAOException {
+        Guest guest = null;
+        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+
+            PreparedStatement statement = connection.prepareStatement(SELECT_GUEST_BY_USER_ID);
+            statement.setInt(1, userId);
+            ResultSet rs = statement.executeQuery();
+            while (rs.next()) {
+                guest = new Guest();
+                guest.setGuestId(rs.getInt(1));
+                guest.setName(rs.getString(2));
+                guest.setMobile(rs.getString(3));
+                guest.setEmail(rs.getString(4));
+                guest.setAddress(rs.getString(5));
+                guest.setUserId(userId);
+            }
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new DAOException("Error. Impossible to find such a user: " + e);
+        }
+        return guest;
+    }
 
     @Override
     public List<User> getUsers() throws DAOException {
@@ -141,15 +182,29 @@ public class UserDaoImpl implements IUserDao {
     }
 
     @Override
-    public int create(String name, String password, int userRoleId) throws DAOException {
+    public int create(String name, String password, int userRoleId, String guestName, String mobile, String email, String address) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(INSERT_USER);
+            PreparedStatement statement = connection.prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS);
             statement.setString(1, name);
             statement.setString(2, password);
             statement.setInt(3, userRoleId);
 
-            int result = statement.executeUpdate();
-            return result;
+            statement.executeUpdate();
+            ResultSet rs = statement.getGeneratedKeys();
+            int newUserId = -1;
+            if (rs.next()) {
+                newUserId = rs.getInt(1);
+            }
+
+            statement = connection.prepareStatement(INSERT_GUEST);
+            statement.setString(1, guestName);
+            statement.setString(2, mobile);
+            statement.setString(3, email);
+            statement.setString(4, address);
+            statement.setInt(5, newUserId);
+
+            return statement.executeUpdate();
+
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DAOException("Error when creating: " + e);
@@ -157,7 +212,7 @@ public class UserDaoImpl implements IUserDao {
     }
 
     @Override
-    public int update(int userId, String name, String password, int userRoleId) throws DAOException {
+    public int update(int userId, String name, String password, int userRoleId, String guestName, String mobile, String email, String address) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(UPDATE_USER);
             statement.setString(1, name);
@@ -165,8 +220,16 @@ public class UserDaoImpl implements IUserDao {
             statement.setInt(3, userRoleId);
             statement.setInt(4, userId);
 
-            int result = statement.executeUpdate();
-            return result;
+            statement.executeUpdate();
+
+            statement = connection.prepareStatement(UPDATE_GUEST);
+            statement.setString(1, guestName);
+            statement.setString(2, mobile);
+            statement.setString(3, email);
+            statement.setString(4, address);
+            statement.setInt(5, userId);
+
+            return statement.executeUpdate();
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DAOException("Error when updating: " + e);

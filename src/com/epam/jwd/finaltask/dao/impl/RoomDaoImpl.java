@@ -39,24 +39,57 @@ public class RoomDaoImpl implements IRoomDao {
                     "r.roomId, r.name roomName, \n" +
                     "FROM room b \n" +
                     "LEFT OUTER JOIN roomType rt ON rt.roomTypeId = b.roomTypeId \n" +
+                    "LEFT OUTER JOIN roomType rt ON rt.roomTypeId = b.roomTypeId \n" +
                     "LEFT OUTER JOIN room r ON r.roomId = b.roomId \n";
 
     private final static String SELECT_AVAILABLE_ROOMS =
-            "SELECT DISTINCT r.roomId, r.name\n" +
+            "SELECT DISTINCT r.roomId, r.name, rat.price\n" +
                     "FROM web.room r\n" +
                     "LEFT OUTER JOIN roomType rt ON rt.roomTypeId = r.roomTypeId\n" +
                     "LEFT OUTER JOIN roomavailability ra ON ra.roomId = r.roomId\n" +
-                    "WHERE r.roomStatusId = 1 AND rt.roomTypeId = ? AND (ra.date NOT BETWEEN ? AND ? OR ra.date IS NULL)";
+                    "LEFT OUTER JOIN rate rat ON rat.roomTypeId = r.roomTypeId\n" +
+                    "WHERE r.roomStatusId = 1 AND rt.roomTypeId = ? AND rat.ratetypeId = ? AND (ra.date NOT BETWEEN ? AND ? OR ra.date IS NULL)";
+
+    private final static String SELECT_RATE_TYPES =
+            "SELECT rt.ratetypeId, rt.name\n" +
+                    "FROM web.rate r\n" +
+                    "LEFT OUTER JOIN web.ratetype rt ON rt.ratetypeId = r.ratetypeId\n" +
+                    "WHERE r.roomTypeId = ?;";
 
     @Override
-    public List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId, String checkinDate, String checkoutDate) throws DAOException {
+    public List<RateType> getRateTypesByRoomType(int roomTypeId) throws DAOException {
+        List<RateType> rateTypes = null;
+        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+
+            PreparedStatement statement = connection.prepareStatement(SELECT_RATE_TYPES);
+            statement.setInt(1, roomTypeId);
+            ResultSet rs = statement.executeQuery();
+
+            rateTypes = new ArrayList<RateType>();
+            while (rs.next()) {
+                RateType rateType = new RateType();
+                rateType.setRateTypeId(rs.getInt(1));
+                rateType.setRateName(rs.getString(2));
+
+                rateTypes.add(rateType);
+            }
+        } catch (Exception e) {
+            logger.error(e.getMessage());
+            throw new DAOException("Error when loading Rate Types: " + e);
+        }
+        return rateTypes;
+    }
+
+    @Override
+    public List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate) throws DAOException {
         List<Room> rooms = null;
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
 
             PreparedStatement statement = connection.prepareStatement(SELECT_AVAILABLE_ROOMS);
             statement.setInt(1, roomTypeId);
-            statement.setDate(2, Date.valueOf(checkinDate));
-            statement.setDate(3, Date.valueOf(checkoutDate));
+            statement.setInt(2, rateTypeId);
+            statement.setDate(3, Date.valueOf(checkinDate));
+            statement.setDate(4, Date.valueOf(checkoutDate));
             ResultSet rs = statement.executeQuery();
 
             rooms = new ArrayList<Room>();
@@ -64,6 +97,7 @@ public class RoomDaoImpl implements IRoomDao {
                 Room room = new Room();
                 room.setRoomId(rs.getInt(1));
                 room.setName(rs.getString(2));
+                room.setPrice(rs.getInt(3));
 
                 rooms.add(room);
             }
