@@ -46,6 +46,7 @@
                         </form>
                     </div>
                 </div>
+                <a class="nav-link" href="./controller?command=signup"><fmt:message key="page.signup"/></a>
             </div>
         </div>
     </div>

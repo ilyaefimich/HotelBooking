@@ -25,7 +25,15 @@
         </ul>
         <form class="form-inline">
             <ul class="nav navbar-nav navbar-right  my-2 my-lg-0">
-                <li class="nav-item active">
+                <c:if test="${!loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
+                    <li class="nav-item">
+                        <a class="nav-link" href="./controller?command=getprofile"><fmt:message
+                                key="page.my_profile"/></a>
+                    </li>
+                </c:if>
+
+
+                <li class="nav-item">
                     <div class="dropdown">
                         <button class="nav-link btn btn-outline-info my-2 my-sm-0 btn-secondary dropdown-toggle"
                                 type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true"
@@ -40,19 +48,8 @@
                     </div>
                 </li>
 
-                <c:if test="${loggeduser==null}">
-                    <li class="nav-item active">
-                        <a class="nav-link btn btn-outline-info my-2 my-sm-0"
-                           href="./controller?command=login"><fmt:message
-                                key="navbar.login"/></a>
-                    </li>
-                    <li class="nav-item active">
-                        <a class="nav-link btn btn-outline-info my-2 my-sm-0"
-                           href="./controller?command=registration"><fmt:message key="navbar.registration"/></a>
-                    </li>
-                </c:if>
                 <c:if test="${loggeduser!=null}">
-                    <li class="nav-item active">
+                    <li class="nav-item">
                         <a class="nav-link  btn btn-outline-info my-2 my-sm-0"
                            href="./controller?command=logout"><fmt:message key="navbar.logout"/></a>
                     </li>

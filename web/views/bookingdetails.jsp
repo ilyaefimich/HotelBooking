@@ -1,5 +1,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="vld" uri="/WEB-INF/validation.tld" %>
 <fmt:setLocale value="${locale}" scope="session"/>
 <fmt:setBundle basename="properties.content"/>
 <%@ page isELIgnored="false" language="java" contentType="text/html; charset=UTF-8"
@@ -15,12 +16,16 @@
 <jsp:include page="/views/header.jsp"/>
 
 <c:set var="isReadonly" scope="page" value="readonly"/>
+<c:set var="isPaymentReadonly" scope="page" value="readonly"/>
+<c:set var="isPaymentDisabled" scope="page" value="disabled"/>
 <c:set var="isDisabled" scope="page" value="disabled"/>
-<c:set var="isRoomsDisabled" scope="page" value="disabled"/>
+<c:set var="isPriceDisabled" scope="page" value="disabled"/>
+<c:set var="isRoomDisabled" scope="page" value="disabled"/>
+<c:set var="isRoomsHidden" scope="page" value="hidden=\"true\""/>
 <c:set var="buttonSubmitText" scope="page" value="Save"/>
 <c:set var="newStatus" scope="page" value="1"/>
 
-<c:if test="${booking == null}">
+<c:if test="${mode == \"create\"}">
     <c:set var="newStatus" scope="page" value="1"/>
     <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
         <c:set var="isReadonly" scope="page" value=""/>
@@ -28,8 +33,6 @@
         <c:set var="buttonSubmitText" scope="page" value="Request booking"/>
     </c:if>
     <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
-        <c:set var="isReadonly" scope="page" value=""/>
-        <c:set var="isDisabled" scope="page" value=""/>
         <c:set var="buttonSubmitText" scope="page" value="Create booking"/>
     </c:if>
 </c:if>
@@ -39,26 +42,35 @@
         <c:set var="buttonSubmitText" scope="page" value="Cancel booking"/>
     </c:if>
     <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
-        <c:set var="isRoomsDisabled" scope="page" value=""/>
-        <c:set var="isReadonly" scope="page" value=""/>
-        <c:set var="isDisabled" scope="page" value=""/>
+        <c:set var="isRoomsHidden" scope="page" value=""/>
+        <c:set var="isPriceDisabled" scope="page" value=""/>
+        <c:set var="isRoomDisabled" scope="page" value=""/>
+        <c:set var="isReadonly" scope="page" value="readonly"/>
+        <c:set var="isDisabled" scope="page" value="disabled"/>
         <c:set var="buttonSubmitText" scope="page" value="Propose room"/>
     </c:if>
 </c:if>
 <c:if test="${booking.getBookingStatus().bookingStatusId == 2}">
     <c:set var="newStatus" scope="page" value="3"/>
     <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
+        <c:set var="isRoomsHidden" scope="page" value=""/>
+        <c:set var="isPaymentReadonly" scope="page" value=""/>
+        <c:set var="isPaymentDisabled" scope="page" value=""/>
         <c:set var="buttonSubmitText" scope="page" value="Confirm"/>
     </c:if>
     <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
-        <c:set var="isReadonly" scope="page" value=""/>
-        <c:set var="isDisabled" scope="page" value=""/>
         <c:set var="buttonSubmitText" scope="page" value="Save"/>
     </c:if>
 </c:if>
 <c:if test="${booking.getBookingStatus().bookingStatusId == 3}">
     <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
-        <c:set var="buttonSubmitText" scope="page" value="Confirm booking"/>
+        <c:set var="buttonSubmitText" scope="page" value="Confirm booking 1"/>
+        <c:set var="isPaymentReadonly" scope="page" value="readonly"/>
+        <c:set var="isPaymentDisabled" scope="page" value="disabled"/>
+    </c:if>
+    <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
+        <c:set var="isPaymentReadonly" scope="page" value="readonly"/>
+        <c:set var="isPaymentDisabled" scope="page" value="disabled"/>
     </c:if>
 </c:if>
 
@@ -70,10 +82,11 @@
     <form class="form-inline needs-validation" method="post" action="./controller?command=updatebooking&mode=create">
         </c:if>
 
-        <input type="number" class="custom-control-input" name="guestid" id="guestid" value="${loggeduser.userId}"
+        <input type="number" class="custom-control-input" name="userid" id="userid" value="${loggeduser.userId}"
                hidden="true">
         <div class="col-md-8 order-md-1"
              style="padding-left: 30rem; padding-right: 10rem; padding-top: 10rem; padding-bottom: 10rem">
+            <vld:error errorMessage="${error}"/>
             <div class="block">
                 <h4 class="mb-3">Booking Information</h4>
                 <div class="row">
@@ -115,7 +128,7 @@
                                required="required"
                                value="${booking.adultsCount}" <c:out value="${isReadonly}"/>>
                         <div class="invalid-feedback">
-                            Valid number is required.<c:out value="${isReadonly}"/>
+                            Valid number is required.
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -129,8 +142,8 @@
                     </div>
                     <div class="col-md-5 mb-3">
                         <label for="roomtype"><fmt:message key="page.booking_room_type"/></label>
-                        <select class="form-select" name="roomtype" id="roomtype" required="required" <c:out
-                                value="${isDisabled}"/>>
+                        <select class="form-select" name="roomtype" id="roomtype" required="required"
+                                <c:out value="${isDisabled}"/>>
                             <option value="1"
                                     <c:if test="${booking.getRoomType().roomTypeId == 1}">
                                         selected="selected"
@@ -184,18 +197,52 @@
                             Please select a valid room type.
                         </div>
                     </div>
-                    <div class="col-md-5 mb-3">
-                        <label for="room"><fmt:message key="page.booking_room"/></label>
-                        <select class="form-select" name="room" id="room" required="required" <c:out
-                                value="${isDisabled}"/> <c:out value="${isRoomsDisabled}"/>>
-                            <label for="room">Avaiable Rooms</label>
+                    <div class="col-md-5 mb-3" <c:out value="${isRoomsHidden}"/> >
+                        <label for="roomid"><fmt:message key="page.booking_room"/></label>
+                        <select class="form-select " name="roomid" id="roomid" onchange="pricefill()" <c:out value="${isRoomDisabled}"/>>
                             <c:forEach var="room" items="${rooms}" varStatus="index">
-                                <option id="<c:out value="${room.roomId}"/>"><c:out value="${room.name}"/></option>
+                                <option value="<c:out value="${room.roomId}"/>"
+                                        <c:if test="${booking.getOfferedRoom().roomId == room.roomId}">
+                                            selected="selected"
+                                        </c:if>
+                                ><c:out value="${room.name}"/></option>
                             </c:forEach>
                         </select>
                         <div class="invalid-feedback">
-                            Please select a valid room type.
+                            Please select a room.
                         </div>
+                        <select id="roomselection" hidden="true">
+                            <c:forEach var="room" items="${rooms}">
+                                <option value="${room.roomId}"><c:out value="${room.price}"/></option>
+                            </c:forEach>
+                        </select>
+                    </div>
+                    <div class="col-md-5 mb-3">
+                        <label for="rateType"><fmt:message key="page.booking_ratetypes"/></label>
+                        <select class="form-select" name="rateType" id="rateType" required="required"
+                                <c:out value="${isDisabled}"/>>
+                            <c:forEach var="rateType" items="${rateTypes}" varStatus="index">
+                                <option value="<c:out value="${rateType.rateTypeId}"/>"
+                                        <c:if test="${booking.getRateType().rateTypeId == rateType.rateTypeId}">
+                                            selected="selected"
+                                        </c:if>
+                                ><c:out value="${rateType.rateName}"/></option>
+                            </c:forEach>
+                        </select>
+                        <div class="invalid-feedback">
+                            Please select a rate type.
+                        </div>
+                    </div>
+                    <div class="col-md-5 mb-3" <c:out value="${isRoomsHidden}"/>>
+                        <label for="price"><fmt:message key="page.booking_price"/></label>
+                        <input type="text" class="form-control" name="price" id="price" placeholder=""
+                               value="${booking.price}" <c:out value="${isPriceDisabled}"/>>
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label for="comment"><fmt:message key="page.booking_comment"/></label>
+                        <input type="text" class="form-control" name="comment" id="comment" placeholder=""
+                               value="${booking.comment}" <c:out value="${isReadonly}"/>>
                     </div>
                 </div>
 
@@ -204,7 +251,7 @@
                 <div class="col-md-6 mb-3">
                     <label for="guestName">Full name</label>
                     <input type="text" class="form-control" id="guestName" placeholder="John Smith" required="required"
-                           value="${booking.getGuest().name}" <c:out value="${isReadonly}"/>>
+                           value="${guest.name}" readonly>
                     <div class="invalid-feedback">
                         Valid guest name is required.
                     </div>
@@ -213,7 +260,7 @@
                     <label for="guestMobile">Mobile</label>
                     <input type="text" class="form-control" id="guestMobile" placeholder="+71028493028"
                            required="required"
-                           value="${booking.getGuest().mobile}" <c:out value="${isReadonly}"/>>
+                           value="${guest.mobile}" readonly>
                     <div class="invalid-feedback">
                         Valid guest's mobile phone number is required.
                     </div>
@@ -221,7 +268,7 @@
                 <div class="mb-3">
                     <label for="email">Email <span class="text-muted">(Optional)</span></label>
                     <input type="email" class="form-control" id="email" placeholder="you@example.com"
-                           value="${booking.getGuest().email}" <c:out value="${isReadonly}"/>>
+                           value="${guest.email}" readonly>
                     <div class="invalid-feedback">
                         Please enter a valid email address.
                     </div>
@@ -230,52 +277,13 @@
                 <div class="mb-3">
                     <label for="address">Address</label>
                     <input type="text" class="form-control" id="address" placeholder="1234 Main St"
-                           value="${booking.getGuest().address}" <c:out value="${isReadonly}"/>>
+                           value="${guest.address}" readonly>
                     <div class="invalid-feedback">
                         Please enter your shipping address.
                     </div>
                 </div>
-                <div class="col-md-5 mb-3">
-                    <label for="city">City</label>
-                    <select class="form-select" id="city" <c:out value="${isDisabled}"/>>
-                        <option value="" selected="selected">Choose...</option>
-                        <option>Minsk</option>
-                    </select>
-                    <div class="invalid-feedback">
-                        Please select a valid city.
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-5 mb-3">
-                        <label for="country">Country</label>
-                        <select class="form-select" id="country" <c:out value="${isDisabled}"/>>
-                            <option value="" selected="selected">Choose...</option>
-                            <option>Belarus</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please select a valid country.
-                        </div>
-                    </div>
-                    <div class="col-md-4 mb-3">
-                        <label for="state">State</label>
-                        <select class="form-select" id="state" <c:out value="${isDisabled}"/>>
-                            <option value="" selected="selected">Choose...</option>
-                            <option>Minsk</option>
-                        </select>
-                        <div class="invalid-feedback">
-                            Please provide a valid state.
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="zip">Zip</label>
-                        <input type="text" class="form-select" id="zip" placeholder="" <c:out value="${isDisabled}"/>>
-                        <div class="invalid-feedback">
-                            Zip code required.
-                        </div>
-                    </div>
-                </div>
             </div>
-            <c:if test="${booking == null}">
+            <c:if test="${mode == \"create\"}">
                 <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="1" hidden="true">
                 <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
                     <button class="btn btn-primary btn-lg btn-block" type="submit"><c:out
@@ -283,6 +291,86 @@
                 </c:if>
                 <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
                     <button class="btn btn-primary btn-lg btn-block" type="submit">Create booking</button>
+                </c:if>
+            </c:if>
+            <c:if test="${booking.getBookingStatus().bookingStatusId >= 2}">
+                <h4 class="mb-3">Payment</h4>
+                <div class="d-block my-3">
+                    <div class="custom-control custom-radio" >
+                        <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
+                               checked="checked" <c:out value="${isPaymentDisabled}"/>>
+                        <label class="custom-control-label" for="credit">Credit card</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
+                            <c:out value="${isPaymentDisabled}"/>>
+                        <label class="custom-control-label" for="debit">Debit card</label>
+                    </div>
+                    <div class="custom-control custom-radio">
+                        <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input"
+                            <c:out value="${isPaymentDisabled}"/>>
+                        <label class="custom-control-label" for="paypal">Paypal</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="cardName">Name on card</label>
+                        <input type="text" class="form-control" id="cardName" name="cardName" placeholder=""
+                            <c:out value="${isPaymentReadonly}"/>
+                               value="${booking.getPreferedPaymentMethod().cardholderName}">
+                        <small class="text-muted">Full name as displayed on card</small>
+                        <div class="invalid-feedback">
+                            Name on card is required
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="cardNumber">Credit card number</label>
+                        <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder=""
+                            <c:out value="${isPaymentReadonly}"/>
+                               value="${booking.getPreferedPaymentMethod().cardNumber}">
+                        <div class="invalid-feedback">
+                            Credit card number is required
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <label for="expirationDate">Expiration</label>
+                        <input type="text" class="form-control" id="expirationDate" name="expirationDate" placeholder=""
+                            <c:out value="${isPaymentReadonly}"/>
+                               value="${booking.getPreferedPaymentMethod().expirationDate}">
+                        <div class="invalid-feedback">
+                            Expiration date required
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label for="cvvCode">CVV</label>
+                        <input type="text" class="form-control" id="cvvCode" name="cvvCode" placeholder=""
+                            <c:out value="${isPaymentReadonly}"/> value="${booking.getPreferedPaymentMethod().csvCode}">
+                        <div class="invalid-feedback">
+                            Security code required
+                        </div>
+                    </div>
+                </div>
+                <hr class="mb-4">
+
+            </c:if>
+            <c:if test="${booking.getBookingStatus().bookingStatusId == 2 || booking.getBookingStatus().bookingStatusId == 3}">
+                <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
+                    <div class="custom-control custom-checkbox" >
+                        <input type="checkbox" class="custom-control-input" id="save-info" <c:out value="${isPaymentDisabled}"/>>
+                        <label class="custom-control-label" for="save-info">Save this information for next time</label>
+                    </div>
+                    <hr class="mb-4">
+                    <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="5"
+                           hidden="true">
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Confirm</button>
+                </c:if>
+                <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
+                    <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="5"
+                           hidden="true">
+                    <button class="btn btn-primary btn-lg btn-block" type="submit">Confirm booking</button>
                 </c:if>
             </c:if>
             <c:if test="${booking.getBookingStatus().bookingStatusId == 1}">
@@ -297,101 +385,33 @@
                     <button class="btn btn-primary btn-lg btn-block" type="submit">Propose room</button>
                 </c:if>
             </c:if>
-            <c:if test="${booking.getBookingStatus().bookingStatusId == 2}">
-                <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
-                    <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="3"
-                           hidden="true">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Confirm</button>
-                </c:if>
-                <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
-                    <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="2"
-                           hidden="true">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Save</button>
-                </c:if>
-            </c:if>
-            <c:if test="${booking.getBookingStatus().bookingStatusId == 3}">
-
-                <h4 class="mb-3">Payment</h4>
-                <div class="d-block my-3">
-                    <div class="custom-control custom-radio">
-                        <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
-                               checked="checked">
-                        <label class="custom-control-label" for="credit">Credit card</label>
-                    </div>
-                    <div class="custom-control custom-radio">
-                        <input id="debit" name="paymentMethod" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="debit">Debit card</label>
-                    </div>
-                    <div class="custom-control custom-radio">
-                        <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input">
-                        <label class="custom-control-label" for="paypal">Paypal</label>
-                    </div>
-                </div>
-
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <label for="cc-name">Name on card</label>
-                        <input type="text" class="form-control" id="cc-name" placeholder="">
-                        <small class="text-muted">Full name as displayed on card</small>
-                        <div class="invalid-feedback">
-                            Name on card is required
-                        </div>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label for="cc-number">Credit card number</label>
-                        <input type="text" class="form-control" id="cc-number" placeholder="">
-                        <div class="invalid-feedback">
-                            Credit card number is required
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 mb-3">
-                        <label for="cc-expiration">Expiration</label>
-                        <input type="text" class="form-control" id="cc-expiration" placeholder="">
-                        <div class="invalid-feedback">
-                            Expiration date required
-                        </div>
-                    </div>
-                    <div class="col-md-3 mb-3">
-                        <label for="cc-expiration">CVV</label>
-                        <input type="text" class="form-control" id="cc-cvv" placeholder="">
-                        <div class="invalid-feedback">
-                            Security code required
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="mb-4">
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="same-address">
-                    <label class="custom-control-label" for="same-address">Shipping address is the same as my billing
-                        address</label>
-                </div>
-                <div class="custom-control custom-checkbox">
-                    <input type="checkbox" class="custom-control-input" id="save-info">
-                    <label class="custom-control-label" for="save-info">Save this information for next time</label>
-                </div>
-                <hr class="mb-4">
-
-                <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
-                    <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="5"
-                           hidden="true">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Confirm booking</button>
-                </c:if>
-            </c:if>
-            <a href="./controller?command=getbookings" id="cancel" name="cancel" class="btn btn-primary btn-lg btn-block">Cancel</a>
+            <a href="./controller?command=getbookings" id="cancel" name="cancel"
+               class="btn btn-primary btn-lg btn-block">Cancel</a>
         </div>
     </form>
 
     <script>
+        /*
+                $(function () {
+                    var local = new Date(this);
+                    document.getElementById('checkin').valueAsDate = local;
+                    document.getElementById('checkout').valueAsDate = new Date(local.getFullYear(), local.getMonth(), local.getDay()+1);
+                };
+        */
+
+        function pricefill() {
+            var select = document.getElementById("roomid");
+            var selectManager = document.getElementById("roomselection");
+            var x = select.selectedIndex;
+            document.getElementById("price").value = selectManager.options[x].text;
+        }
+
         // Example starter JavaScript for disabling form submissions if there are invalid fields
         (function () {
             'use strict'
 
             // Fetch all the forms we want to apply custom Bootstrap validation styles to
             var forms = document.querySelectorAll('.needs-validation')
-
             // Loop over them and prevent submission
             Array.prototype.slice.call(forms)
                 .forEach(function (form) {
@@ -400,22 +420,11 @@
                             event.preventDefault()
                             event.stopPropagation()
                         }
-
                         form.classList.add('was-validated')
                     }, false)
                 })
         })()
 
-        $('#roomtype').change(function (event) {
-            var $location = $("select#roomtype").val();
-            $.get('SvrController', {location: $location}, function (responseJson) {
-                var $select = $('#svrAddr');
-                $select.find('option').remove();
-                $.each(responseJson, function (index, name) {
-                    $('<option>').val(index).text(name).appendTo($select);
-                });
-            }, 'json');
-        });
     </script>
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"
             integrity="sha384-J6qa4849blE2+poT4WnyKhv5vZF5SrPo0iEjwBvKU7imGFAV0wwj1yYfoRSJoZ+n"
