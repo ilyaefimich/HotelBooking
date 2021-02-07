@@ -20,12 +20,12 @@ public class LoginCommand extends AbstractCommand {
         String login = request.getParameter("user-login");
         String password = request.getParameter("user-password");
         User user = userService.getUserByNameAndPassword(login, password);
-        request.getSession().setAttribute("locale", new Locale("en","EN"));
-    if (user != null) {
+        request.getSession().setAttribute("locale", new Locale("en", "EN"));
+        if (user != null) {
             request.getSession().setAttribute(Attributes.LOGGEDUSER, user);
-            return Pages.GETBOOKINGS;
+            return Pages.HOME;
 
-        } else if (login != null || password != null){
+        } else if (login != null || password != null) {
             request.setAttribute("error", "Incorrect user name or password, please, try again.");
             return Pages.LOGIN;
         } else {
