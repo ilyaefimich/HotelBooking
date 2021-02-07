@@ -7,6 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.*;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +23,9 @@ public class BookingDaoImpl implements IBookingDao {
     private final static String UPDATE_BOOKING = "UPDATE `web`.`booking`\n" +
             "    SET\n" +
             "            bookingStatusId = ?,\n" +
-            "            roomId = ?,\n" +
-            "            price = ?,\n" +
-            "            preferedpaymentmethodid = ?\n" +
+            "            roomId = COALESCE(?, roomId),\n" +
+            "            price = COALESCE(?, price),\n" +
+            "            preferedpaymentmethodid = COALESCE(?, preferedpaymentmethodid) \n" +
             "    WHERE bookingId = ?;";
 
     private final static String INSERT_BOOKING = "INSERT INTO `web`.`booking` (`checkInDate`, `checkOutDate`, `adultsCount`, `childrenCount`, `comment`, `bookingStatusId`, `roomTypeId`, `GuestId`, `rateTypeId`) " +
@@ -32,6 +34,9 @@ public class BookingDaoImpl implements IBookingDao {
     private final static String INSERT_PREFERRED_PAYMENT_METHOD = "INSERT INTO `web`.`preferedpaymentmethod` " +
             "(`name`, `cardholderName`, `expirationDate`, `cardNumber`, `csvCode`, `paymentMethodId`) " +
             "VALUES (?, ?, ?, ?, ?, ?);";
+
+    private final static String INSERT_ROOM_AVAILABILITY = "INSERT INTO `web`.`roomavailability` (`date`, `roomId`) " +
+            "VALUES (?, ?);";
 
     private final static String SELECT_BOOKINGS =
             "SELECT b.checkInDate, b.checkOutDate, b.adultsCount, b.roomTypeId, rt.name roomTypeName, b.bookingStatusId, bs.name bookingStatusName, \n" +
@@ -47,62 +52,66 @@ public class BookingDaoImpl implements IBookingDao {
                     "LEFT OUTER JOIN ratetype rat ON rat.rateTypeId = b.rateTypeId \n" +
                     "LEFT OUTER JOIN paymentinfo pi ON pi.PaymentInfoId= b.PaymentInfoId \n";
 
+    private final static String SELECT_BOOKING_BY_BOOKING_ID =
+            "SELECT b.checkInDate, b.checkOutDate, b.roomId, b.price, b.PreferedpaymentMethodId " +
+                    "FROM booking b \n" +
+                    "WHERE b.bookingId = ?;";
 
     @Override
     public List<Booking> getBookings() throws DAOException {
         List<Booking> bookings = null;
-        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
 
-            PreparedStatement statement = connection.prepareStatement(SELECT_BOOKINGS);
-            ResultSet rs = statement.executeQuery();
+        try {
+            try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(SELECT_BOOKINGS)) {
+                    try (ResultSet rs = statement.executeQuery()) {
+                        bookings = new ArrayList<Booking>();
+                        Booking booking;
+                        while (rs.next()) {
+                            booking = new Booking();
+                            booking.setCheckInDate(rs.getDate(1).toLocalDate());
+                            booking.setCheckOutDate(rs.getDate(2).toLocalDate());
+                            booking.setAdultsCount(rs.getInt(3));
+                            booking.setChildrenCount(rs.getInt(9));
+                            booking.setComment(rs.getString(10));
+                            booking.setPrice(rs.getInt(28));
+                            booking.setBookingId(rs.getInt(8));
 
-            bookings = new ArrayList<Booking>();
-            Booking booking;
-            while (rs.next()) {
-                booking = new Booking();
-                booking.setCheckInDate(rs.getDate(1).toLocalDate());
-                booking.setCheckOutDate(rs.getDate(2).toLocalDate());
-                booking.setAdultsCount(rs.getInt(3));
-                booking.setChildrenCount(rs.getInt(9));
-                booking.setComment(rs.getString(10));
-                booking.setPrice(rs.getInt(28));
-                booking.setBookingId(rs.getInt(8));
+                            Room room = new Room();
+                            room.setRoomId(rs.getInt(17));
+                            room.setName(rs.getString(18));
+                            RoomStatus roomStatus = new RoomStatus();
+                            roomStatus.setRoomStatusId(rs.getInt(19));
+                            RoomType roomType = new RoomType();
+                            roomType.setRoomTypeId(rs.getInt(4));
+                            roomType.setName(rs.getString(5));
+                            room.setRoomStatus(roomStatus);
+                            room.setRoomType(roomType);
+                            booking.setOfferedRoom(room);
 
-                Room room = new Room();
-                room.setRoomId(rs.getInt(17));
-                room.setName(rs.getString(18));
-                RoomStatus roomStatus = new RoomStatus();
-                roomStatus.setRoomStatusId(rs.getInt(19));
-                RoomType roomType = new RoomType();
-                roomType.setRoomTypeId(rs.getInt(4));
-                roomType.setName(rs.getString(5));
-                room.setRoomStatus(roomStatus);
-                room.setRoomType(roomType);
-                booking.setOfferedRoom(room);
+                            RateType rateType = new RateType();
+                            rateType.setRateTypeId(rs.getInt(29));
+                            rateType.setRateName(rs.getString(30));
+                            booking.setRateType(rateType);
 
-                RateType rateType = new RateType();
-                rateType.setRateTypeId(rs.getInt(29));
-                rateType.setRateName(rs.getString(30));
-                booking.setRateType(rateType);
+                            roomType = new RoomType();
+                            roomType.setRoomTypeId(rs.getInt(4));
+                            roomType.setName(rs.getString(5));
+                            booking.setRoomType(roomType);
 
-                roomType = new RoomType();
-                roomType.setRoomTypeId(rs.getInt(4));
-                roomType.setName(rs.getString(5));
-                booking.setRoomType(roomType);
+                            Guest guest = new Guest();
+                            guest.setAddress(rs.getString(16));
+                            guest.setEmail(rs.getString(15));
+                            guest.setMobile(rs.getString(14));
+                            guest.setGuestId(rs.getInt(12));
+                            guest.setName(rs.getString(13));
+                            guest.setUserId(rs.getInt(27));
+                            booking.setGuest(guest);
 
-                Guest guest = new Guest();
-                guest.setAddress(rs.getString(16));
-                guest.setEmail(rs.getString(15));
-                guest.setMobile(rs.getString(14));
-                guest.setGuestId(rs.getInt(12));
-                guest.setName(rs.getString(13));
-                guest.setUserId(rs.getInt(27));
-                booking.setGuest(guest);
-
-                BookingStatus bookingStatus = new BookingStatus();
-                bookingStatus.setBookingStatusId(rs.getInt(6));
-                bookingStatus.setName(rs.getString(7));
-                booking.setBookingStatus(bookingStatus);
+                            BookingStatus bookingStatus = new BookingStatus();
+                            bookingStatus.setBookingStatusId(rs.getInt(6));
+                            bookingStatus.setName(rs.getString(7));
+                            booking.setBookingStatus(bookingStatus);
 
 /*
                 PaymentInfo paymentInfo = new PaymentInfo();
@@ -122,18 +131,20 @@ public class BookingDaoImpl implements IBookingDao {
                 booking.setSelectedPaymentMethod(paymentMethod);
 */
 
-                PreferedPaymentMethod preferedPaymentMethod = new PreferedPaymentMethod();
-                preferedPaymentMethod.setPreferedPaymentMethodId(rs.getInt(20));
-                preferedPaymentMethod.setCardholderName(rs.getString(31));
-                preferedPaymentMethod.setCardNumber(rs.getInt(33));
-                preferedPaymentMethod.setCsvCode(rs.getInt(34));
-                preferedPaymentMethod.setExpirationDate(rs.getString(32));
-                preferedPaymentMethod.setPaymentMethodId(rs.getInt(35));
-                booking.setPreferedPaymentMethod(preferedPaymentMethod);
+                            PreferedPaymentMethod preferedPaymentMethod = new PreferedPaymentMethod();
+                            preferedPaymentMethod.setPreferedPaymentMethodId(rs.getInt(20));
+                            preferedPaymentMethod.setCardholderName(rs.getString(31));
+                            preferedPaymentMethod.setCardNumber(rs.getInt(33));
+                            preferedPaymentMethod.setCsvCode(rs.getInt(34));
+                            preferedPaymentMethod.setExpirationDate(rs.getString(32));
+                            preferedPaymentMethod.setPaymentMethodId(rs.getInt(35));
+                            booking.setPreferedPaymentMethod(preferedPaymentMethod);
 
-                bookings.add(booking);
+                            bookings.add(booking);
+                        }
 
-
+                    }
+                }
             }
         } catch (SQLException e) {
             logger.error(e.getMessage());
@@ -145,10 +156,11 @@ public class BookingDaoImpl implements IBookingDao {
     @Override
     public void delete(int bookingid) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(DELETE_BOOKING);
-            statement.setInt(1, bookingid);
-            int result = statement.executeUpdate();
-            statement.closeOnCompletion();
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_BOOKING)) {
+                statement.setInt(1, bookingid);
+                statement.executeUpdate();
+                statement.closeOnCompletion();
+            }
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DAOException("Error when deleting a booking: " + e);
@@ -158,20 +170,19 @@ public class BookingDaoImpl implements IBookingDao {
     @Override
     public void create(String checkInDate, String checkOutDate, int adultsCount, int childrenCount, String comment, int roomTypeId, int guestId, int rateTypeId) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-            Booking booking = new Booking();
+            try (PreparedStatement statement = connection.prepareStatement(INSERT_BOOKING)) {
+                statement.setDate(1, Date.valueOf(checkInDate));
+                statement.setDate(2, Date.valueOf(checkOutDate));
+                statement.setInt(3, adultsCount);
+                statement.setInt(4, childrenCount);
+                statement.setString(5, comment);
+                statement.setInt(6, 1);
+                statement.setInt(7, roomTypeId);
+                statement.setInt(8, guestId);
+                statement.setInt(9, rateTypeId);
 
-            PreparedStatement statement = connection.prepareStatement(INSERT_BOOKING);
-            statement.setDate(1, Date.valueOf(checkInDate));
-            statement.setDate(2, Date.valueOf(checkOutDate));
-            statement.setInt(3, adultsCount);
-            statement.setInt(4, childrenCount);
-            statement.setString(5, comment);
-            statement.setInt(6, 1);
-            statement.setInt(7, roomTypeId);
-            statement.setInt(8, guestId);
-            statement.setInt(9, rateTypeId);
-
-            int result = statement.executeUpdate();
+                statement.executeUpdate();
+            }
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DAOException("Error when creating a booking: " + e);
@@ -181,42 +192,82 @@ public class BookingDaoImpl implements IBookingDao {
     @Override
     public void update(int bookingid, Integer roomId, int newStatus, Integer price, String cardholderName, String cardNumber, String ccvCode, String expirationDate, int paymentMethodId) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-            PreparedStatement statement;
+
             int newId = -1;
             if (cardholderName != null) {
-                statement = connection.prepareStatement(INSERT_PREFERRED_PAYMENT_METHOD, Statement.RETURN_GENERATED_KEYS);
-                statement.setString(1, "");
-                statement.setString(2, cardholderName);
-                statement.setString(3, expirationDate);
-                statement.setString(4, cardNumber);
-                statement.setString(5, ccvCode);
-                statement.setInt(6, paymentMethodId);
-                statement.executeUpdate();
-                ResultSet rs = statement.getGeneratedKeys();
-                if (rs.next()) {
-                    newId = rs.getInt(1);
+                try (PreparedStatement statement = connection.prepareStatement(INSERT_PREFERRED_PAYMENT_METHOD, Statement.RETURN_GENERATED_KEYS)) {
+                    statement.setString(1, "");
+                    statement.setString(2, cardholderName);
+                    statement.setString(3, expirationDate);
+                    statement.setString(4, cardNumber);
+                    statement.setString(5, ccvCode);
+                    statement.setInt(6, paymentMethodId);
+                    statement.executeUpdate();
+                    try (ResultSet rs = statement.getGeneratedKeys()) {
+                        if (rs.next()) {
+                            newId = rs.getInt(1);
+                        }
+                    }
                 }
             }
-            statement = connection.prepareStatement(UPDATE_BOOKING);
-            statement.setInt(1, newStatus);
-            if (roomId != null) {
-                statement.setInt(2, roomId);
-                statement.setInt(3, price);
-            } else {
-                statement.setNull(2, java.sql.Types.INTEGER);
-                statement.setNull(3, java.sql.Types.INTEGER);
-            }
-            if (newId != -1) {
-                statement.setInt(4, newId);
-            } else {
-                statement.setNull(4, java.sql.Types.INTEGER);
-            }
-            statement.setInt(5, bookingid);
-            statement.executeUpdate();
+            try (PreparedStatement statement = connection.prepareStatement(UPDATE_BOOKING)) {
+                statement.setInt(1, newStatus);
+                if (roomId != null) {
+                    statement.setInt(2, roomId);
+                    statement.setInt(3, price);
+                } else {
+                    statement.setNull(2, java.sql.Types.INTEGER);
+                    statement.setNull(3, java.sql.Types.INTEGER);
+                }
+                if (newId != -1) {
+                    statement.setInt(4, newId);
+                } else {
+                    statement.setNull(4, java.sql.Types.INTEGER);
+                }
+                statement.setInt(5, bookingid);
+                statement.executeUpdate();
 
+                if (newStatus == 2) {
+                    updateRoomAvailability(bookingid);
+                }
+            }
         } catch (SQLException e) {
             logger.error(e.getMessage());
             throw new DAOException("Error when updating a booking: " + e);
+        }
+    }
+
+    public void updateRoomAvailability(int bookingid) throws DAOException {
+        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+            LocalDate checkin = null;
+            LocalDate checkout = null;
+            int roomid = -1;
+            int dateDifInDays = -1;
+
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_BOOKING_BY_BOOKING_ID)) {
+                statement.setInt(1, bookingid);
+                try (ResultSet rs = statement.executeQuery()) {
+                    while (rs.next()) {
+                        checkin = rs.getDate(1).toLocalDate();
+                        checkout = rs.getDate(2).toLocalDate();
+                        roomid = rs.getInt(3);
+                    }
+                    Period period = Period.between(checkin, checkout);
+                    dateDifInDays = period.getDays();
+                }
+            }
+
+            try (PreparedStatement statement = connection.prepareStatement(INSERT_ROOM_AVAILABILITY)) {
+                for (int i = dateDifInDays; i >= 0; i--) {
+                    statement.setDate(1, Date.valueOf(checkin.plusDays(i)));
+                    statement.setInt(2, roomid);
+                    statement.executeUpdate();
+                }
+            }
+
+        } catch (SQLException e) {
+            logger.error(e.getMessage());
+            throw new DAOException("Error when updating a room availability: " + e);
         }
     }
 
