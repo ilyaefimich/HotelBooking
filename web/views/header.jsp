@@ -4,11 +4,11 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <fmt:setLocale value="${locale}" scope="session"/>
 <fmt:setBundle basename="properties.content"/>
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark" style="background-color: rgba(25,25,25,0.94) !important;">
+<nav class="navbar navbar-right navbar-expand-lg navbar-dark bg-dark" style="background-color: rgba(25,25,25,0.94) !important;">
     <div class="collapse navbar-collapse" id="navbarColor01">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="./controller?command=getbookings"><fmt:message key="page.home"/></a>
+                <a class="nav-link" href="./index.jsp"><fmt:message key="page.home"/></a>
             </li>
 
             <li class="nav-item">
