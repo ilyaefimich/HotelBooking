@@ -19,23 +19,24 @@
 <body>
 <jsp:include page="/views/header.jsp"/>
 
-
 <div class="container-fluid"
-     style="padding-left: 30rem; padding-right: 20rem; padding-top: 10rem; padding-bottom: 10rem ">
+     style="padding-left: 30rem; padding-right: 20rem; padding-bottom: 10rem ">
+
+    <h1 align="center">Bookings</h1>
 
     <form method="POST" action="./controller?command=bookingdetails&mode=create">
-        <div class="row">
+        <div class="row text-right">
             <div class="col-xs-12">
-                <div class="text-right">
-                    <input type="submit" value="<fmt:message key="page.add_booking"/>"
-                           class="btn btn-primary btn-xs pull-right"/>
-                </div>
+                <input type="submit" value="<fmt:message key="page.add_booking"/>"
+                       class="btn btn-primary btn-xs pull-right"/>
             </div>
         </div>
     </form>
 
-    <table class="table">
-        <thead class="thead-inverse">
+    <input class="form-control" id="bookingsSearch" type="text" placeholder="Search..">
+    <br>
+
+    <table id="bookingsTable" class="table">
         <tr>
             <th><fmt:message key="page.booking_id"/></th>
             <th><fmt:message key="page.booking_checkin"/></th>
@@ -111,6 +112,17 @@
         $(this).find('.btn-ok').attr('href', $(e.relatedTarget).data('href'));
 
         $('.debug-url').html('Delete URL: <strong>' + $(this).find('.btn-ok').attr('href') + '</strong>');
+    });
+
+    $(document).ready(function () {
+        $("#bookingsSearch").on("keyup", function () {
+            var value = $(this).val().toLowerCase();
+            $("#bookingsTable tr").filter(function () {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+        });
+
+        $('#bookingsTable').DataTable();
     });
 
 </script>
