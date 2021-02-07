@@ -33,6 +33,8 @@
         <c:set var="buttonSubmitText" scope="page" value="Request booking"/>
     </c:if>
     <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
+        <c:set var="isReadonly" scope="page" value=""/>
+        <c:set var="isDisabled" scope="page" value=""/>
         <c:set var="buttonSubmitText" scope="page" value="Create booking"/>
     </c:if>
 </c:if>
@@ -72,6 +74,9 @@
         <c:set var="isPaymentReadonly" scope="page" value="readonly"/>
         <c:set var="isPaymentDisabled" scope="page" value="disabled"/>
     </c:if>
+</c:if>
+<c:if test="${booking.getBookingStatus().bookingStatusId == 5}">
+    <c:set var="isRoomsHidden" scope="page" value=""/>
 </c:if>
 
 <c:if test="${mode == \"update\" }">
