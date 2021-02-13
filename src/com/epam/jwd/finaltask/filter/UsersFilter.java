@@ -21,7 +21,6 @@ public class UsersFilter implements Filter {
         IUserService userService = new UserServiceImpl();
         List<User> users = userService.getUsers();
         request.setAttribute(Attributes.USERS, users);
-        request.getSession().setAttribute(Attributes.LOGGEDUSER, users);
         filterChain.doFilter(servletRequest, servletResponse);
     }
 
