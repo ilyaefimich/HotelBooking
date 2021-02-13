@@ -15,9 +15,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class ConnectionPool {
+public final class ConnectionPool {
 
-    static final Logger logger = LoggerFactory.getLogger(ConnectionPool.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(ConnectionPool.class);
 
     private static AtomicBoolean isPoolCreated = new AtomicBoolean(false);
     private static AtomicBoolean isPoolClosed = new AtomicBoolean(false);
@@ -33,35 +33,35 @@ public class ConnectionPool {
 
     private ConnectionPool() {
         ResourceBundle resourceBundle = ResourceBundle.getBundle("resources.configuration.database");
-        String DRIVER = resourceBundle.getString("db.driver");
-        String URL = resourceBundle.getString("db.url");
-        String LOGIN = resourceBundle.getString("db.login");
-        String PASSWORD = resourceBundle.getString("db.password");
+        String driver = resourceBundle.getString("db.driver");
+        String url = resourceBundle.getString("db.url");
+        String login = resourceBundle.getString("db.login");
+        String password = resourceBundle.getString("db.password");
         int POOL_SIZE = Integer.valueOf(resourceBundle.getString("db.poolsize"));
 
         usedConnections = new ArrayBlockingQueue<>(POOL_SIZE);
         availableConnections = new ArrayBlockingQueue<>(POOL_SIZE);
         try {
-            Class.forName(DRIVER).getDeclaredConstructor().newInstance();
+            Class.forName(driver).getDeclaredConstructor().newInstance();
         } catch (IllegalAccessException | InstantiationException | ClassNotFoundException | NoSuchMethodException | InvocationTargetException e) {
-            logger.error("Error. Impossible to load driver.", e);
+            LOGGER.error("Error. Impossible to load driver.", e);
             throw new RuntimeException(e);
         }
 
         for (int i = 0; i < POOL_SIZE; i++) {
             try {
-                Connection connection = DriverManager.getConnection(URL, LOGIN, PASSWORD);
+                Connection connection = DriverManager.getConnection(url, login, password);
                 availableConnections.put(new DBConnection(connection));
                 connectionAmount++;
             } catch (SQLException | InterruptedException e) {
-                logger.error("Error. Impossible to get connection : " + i, e);
+                LOGGER.error("Error. Impossible to get connection : " + i, e);
             }
         }
         if (connectionAmount < 1) {
-            logger.error("Error. Impossible to initialize connections. Connection amount < 1.");
+            LOGGER.error("Error. Impossible to initialize connections. Connection amount < 1.");
             throw new RuntimeException("Error. Impossible to initialize connections");
         }
-        logger.info("Connections amount : " + connectionAmount);
+        LOGGER.info("Connections amount : " + connectionAmount);
     }
 
     public static ConnectionPool getInstance() {
@@ -87,7 +87,7 @@ public class ConnectionPool {
                 connection = availableConnections.take();
                 usedConnections.put(connection);
             } catch (InterruptedException e) {
-                logger.error("Error. Impossible to get connection.", e);
+                LOGGER.error("Error. Impossible to get connection.", e);
             } finally {
                 closePoolLock.unlock();
             }
@@ -102,7 +102,7 @@ public class ConnectionPool {
             try {
                 availableConnections.put(connection);
             } catch (InterruptedException e) {
-                logger.error("Error. Impossible to release connection.", e);
+                LOGGER.error("Error. Impossible to release connection.", e);
             }
         }
     }
@@ -115,11 +115,11 @@ public class ConnectionPool {
                     isPoolClosed.set(true);
                     for (int i = 0; i < connectionAmount; ++i) {
                         availableConnections.take().realClose();
-                        logger.info("Connection closed : " + i);
+                        LOGGER.info("Connection closed : " + i);
                     }
                 }
             } catch (SQLException | InterruptedException e) {
-                logger.error("Error. Impossible to close connection pool.", e);
+                LOGGER.error("Error. Impossible to close connection pool.", e);
             } finally {
                 closePoolLock.unlock();
             }

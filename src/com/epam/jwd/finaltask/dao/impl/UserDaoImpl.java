@@ -12,25 +12,25 @@ import java.util.List;
 
 
 public class UserDaoImpl implements IUserDao {
-    static final Logger logger = LoggerFactory.getLogger(UserDaoImpl.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(UserDaoImpl.class);
 
-    private final static String DELETE_USER = "DELETE FROM `web`.`user`\n" +
+    private static final String DELETE_USER = "DELETE FROM `web`.`user`\n" +
             "    WHERE userId = ?;";
 
-    private final static String INSERT_USER = "INSERT INTO `web`.`user` (`name`, `password`, `roleId`) " +
+    private static final String INSERT_USER = "INSERT INTO `web`.`user` (`name`, `password`, `roleId`) " +
             "VALUES (?, ?, ?);";
 
-    private final static String INSERT_GUEST = "INSERT INTO `web`.`guest` (`name`, `mobile`, `email`, 'address', 'userid') " +
+    private static final String INSERT_GUEST = "INSERT INTO `web`.`guest` (`name`, `mobile`, `email`, `address`, `userid`) " +
             "VALUES (?, ?, ?, ?, ?);";
 
-    private final static String UPDATE_USER = "UPDATE `web`.`user`\n" +
+    private static final String UPDATE_USER = "UPDATE `web`.`user`\n" +
             "    SET\n" +
             "            name = ?,\n" +
             "            password = ?,\n" +
             "            roleId = ?\n" +
             "    WHERE userId = ?;";
 
-    private final static String UPDATE_GUEST = "UPDATE `web`.`guest`\n" +
+    private static final String UPDATE_GUEST = "UPDATE `web`.`guest`\n" +
             "    SET\n" +
             "            name = ?,\n" +
             "            mobile = ?,\n" +
@@ -38,24 +38,24 @@ public class UserDaoImpl implements IUserDao {
             "            address = ?\n" +
             "    WHERE userId = ?;";
 
-    private final static String SELECT_USERS =
-            "SELECT u.userId, u.name, u.password, u.roleId, ur.name  \n" +
-                    "FROM web.user u\n" +
-                    "LEFT OUTER JOIN UserRole ur ON ur.roleId = u.roleId;";
+    private static final String SELECT_USERS =
+            " SELECT u.userId, u.name, u.password, u.roleId, ur.name  \n" +
+                    "                    FROM web.user u\n" +
+                    "                    LEFT OUTER JOIN UserRole ur ON ur.roleId = u.roleId";
 
-    private final static String SELECT_FIND_USER_BYNAMEANDPASSWORD =
+    private static final String SELECT_FIND_USER_BYNAMEANDPASSWORD =
             "SELECT u.userId, u.name, u.password, u.roleId, ur.name  \n" +
                     "FROM web.user u\n" +
                     "LEFT OUTER JOIN UserRole ur ON ur.roleId = u.roleId\n" +
                     "WHERE u.name = ? AND u.password = ?;";
 
-    private final static String SELECT_USER_BY_ID =
+    private static final String SELECT_USER_BY_ID =
             "SELECT u.userId, u.name, u.password, u.roleId, ur.name  \n" +
                     "FROM web.user u\n" +
                     "LEFT OUTER JOIN UserRole ur ON ur.roleId = u.roleId\n" +
                     "WHERE u.userId = ?;";
 
-    private final static String SELECT_GUEST_BY_USER_ID =
+    private static final String SELECT_GUEST_BY_USER_ID =
             "SELECT g.GuestId, g.name, g.mobile, g.email, g.address\n" +
                     "FROM web.guest g\n" +
                     "WHERE g.userId = ?";
@@ -65,21 +65,24 @@ public class UserDaoImpl implements IUserDao {
     public Guest getGuestByUserId(int userId) throws DAOException {
         Guest guest = null;
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-
-            PreparedStatement statement = connection.prepareStatement(SELECT_GUEST_BY_USER_ID);
-            statement.setInt(1, userId);
-            ResultSet rs = statement.executeQuery();
-            while (rs.next()) {
-                guest = new Guest();
-                guest.setGuestId(rs.getInt(1));
-                guest.setName(rs.getString(2));
-                guest.setMobile(rs.getString(3));
-                guest.setEmail(rs.getString(4));
-                guest.setAddress(rs.getString(5));
-                guest.setUserId(userId);
+            try (PreparedStatement statement = connection.prepareStatement(SELECT_GUEST_BY_USER_ID)) {
+                statement.setInt(1, userId);
+                try (ResultSet rs = statement.executeQuery()) {
+                    while (rs.next()) {
+                        guest = new Guest();
+                        guest.setGuestId(rs.getInt(1));
+                        guest.setName(rs.getString(2));
+                        guest.setMobile(rs.getString(3));
+                        guest.setEmail(rs.getString(4));
+                        guest.setAddress(rs.getString(5));
+                        guest.setUserId(userId);
+                    }
+                }
             }
+
+
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error. Impossible to find such a user: " + e);
         }
         return guest;
@@ -88,27 +91,34 @@ public class UserDaoImpl implements IUserDao {
     @Override
     public List<User> getUsers() throws DAOException {
         List<User> users = null;
-        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+        try {
+            try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+                try (PreparedStatement statement = connection.prepareStatement(SELECT_USERS)) {
+                    try (ResultSet rs = statement.executeQuery()) {
+                        users = new ArrayList<User>();
+                        User user;
+                        while (rs.next()) {
+                            user = new User();
+                            user.setUserId(rs.getInt(1));
+                            user.setName(rs.getString(2));
+                            user.setPassword(rs.getString(3));
 
-            PreparedStatement statement = connection.prepareStatement(SELECT_USERS);
-            ResultSet rs = statement.executeQuery();
+                            UserRole userRole = new UserRole();
+                            userRole.setRoleId(rs.getInt(4));
+                            userRole.setRoleName(rs.getString(5));
+                            user.setUserRole(userRole);
+                            users.add(user);
+                        }
+                    } catch (SQLException e) {
+                        LOGGER.error(e.getMessage());
+                        throw new DAOException("Error. Impossible to load users: " + e);
+                    }
 
-            users = new ArrayList<User>();
-            while (rs.next()) {
-                User user = new User();
-                user.setUserId(rs.getInt(1));
-                user.setName(rs.getString(2));
-                user.setPassword(rs.getString(3));
-
-                UserRole userRole = new UserRole();
-                userRole.setRoleId(rs.getInt(4));
-                userRole.setRoleName(rs.getString(5));
-                user.setUserRole(userRole);
-                users.add(user);
+                }
             }
-        } catch (SQLException e) {
-            logger.error(e.getMessage());
-            throw new DAOException("Error. Impossible to load users: " + e);
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
         return users;
     }
@@ -133,7 +143,7 @@ public class UserDaoImpl implements IUserDao {
                 user.setUserRole(userRole);
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error. Impossible to find such a user: " + e);
         }
         return user;
@@ -160,7 +170,7 @@ public class UserDaoImpl implements IUserDao {
                 user.setUserRole(userRole);
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error. Impossible to find uch a user: " + e);
         }
         return user;
@@ -169,50 +179,67 @@ public class UserDaoImpl implements IUserDao {
     @Override
     public int delete(int userid) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-
-            PreparedStatement statement = connection.prepareStatement(DELETE_USER);
-            statement.setInt(1, userid);
-            int result = statement.executeUpdate();
-            statement.closeOnCompletion();
-            return result;
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_USER)) {
+                statement.setInt(1, userid);
+                statement.closeOnCompletion();
+            }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error when deleting a user: " + e);
         }
+        return userid;
     }
 
     @Override
-    public int create(String name, String password, int userRoleId, String guestName, String mobile, String email, String address) throws DAOException {
-        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-            PreparedStatement statement = connection.prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS);
-            statement.setString(1, name);
-            statement.setString(2, password);
-            statement.setInt(3, userRoleId);
+    public void create(String name, String password, int userRoleId, String guestName, String mobile, String
+            email, String address) throws DAOException {
 
-            statement.executeUpdate();
-            ResultSet rs = statement.getGeneratedKeys();
-            int newUserId = -1;
-            if (rs.next()) {
-                newUserId = rs.getInt(1);
+        try {
+            try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+                try {
+                    connection.setTransactionIsolation(Connection.TRANSACTION_SERIALIZABLE);
+
+                    connection.setAutoCommit(false);
+                    int newUserId = -1;
+                    try (PreparedStatement statement = connection.prepareStatement(INSERT_USER, Statement.RETURN_GENERATED_KEYS)) {
+                        statement.setString(1, name);
+                        statement.setString(2, password);
+                        statement.setInt(3, userRoleId);
+
+                        statement.executeUpdate();
+                        ResultSet rs = statement.getGeneratedKeys();
+                        if (rs.next()) {
+                            newUserId = rs.getInt(1);
+                        }
+                    }
+
+                    try (PreparedStatement statement = connection.prepareStatement(INSERT_GUEST)) {
+                        statement.setString(1, guestName);
+                        statement.setString(2, mobile);
+                        statement.setString(3, email);
+                        statement.setString(4, address);
+                        statement.setInt(5, newUserId);
+                        statement.executeUpdate();
+                    }
+                    connection.commit();
+
+                } catch (SQLException e) {
+                    connection.rollback();
+                    LOGGER.error(e.getMessage());
+                    throw new DAOException("Error when creating user and guest profile: " + e);
+                } finally {
+                    connection.setAutoCommit(true);
+                }
             }
-
-            statement = connection.prepareStatement(INSERT_GUEST);
-            statement.setString(1, guestName);
-            statement.setString(2, mobile);
-            statement.setString(3, email);
-            statement.setString(4, address);
-            statement.setInt(5, newUserId);
-
-            return statement.executeUpdate();
-
         } catch (SQLException e) {
-            logger.error(e.getMessage());
-            throw new DAOException("Error when creating: " + e);
+            LOGGER.error(e.getMessage());
+            throw new DAOException("Error when get Connection: " + e);
         }
     }
 
     @Override
-    public int update(int userId, String name, String password, int userRoleId, String guestName, String mobile, String email, String address) throws DAOException {
+    public int update(int userId, String name, String password, int userRoleId, String guestName, String
+            mobile, String email, String address) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
             PreparedStatement statement = connection.prepareStatement(UPDATE_USER);
             statement.setString(1, name);
@@ -231,7 +258,7 @@ public class UserDaoImpl implements IUserDao {
 
             return statement.executeUpdate();
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error when updating: " + e);
         }
     }

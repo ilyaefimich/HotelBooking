@@ -80,8 +80,12 @@ public class PreferedPaymentMethod {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         PreferedPaymentMethod that = (PreferedPaymentMethod) o;
         return preferedPaymentMethodId == that.preferedPaymentMethodId &&
                 cardNumber == that.cardNumber &&

@@ -15,30 +15,30 @@ import java.util.List;
 
 public class BookingDaoImpl implements IBookingDao {
 
-    static final Logger logger = LoggerFactory.getLogger(BookingDaoImpl.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BookingDaoImpl.class);
 
-    private final static String DELETE_BOOKING = "DELETE FROM `web`.`booking`\n" +
+    private static final String DELETE_BOOKING = "DELETE FROM `web`.`booking`\n" +
             "    WHERE bookingId = ?;";
 
-    private final static String UPDATE_BOOKING = "UPDATE `web`.`booking`\n" +
-            "    SET\n" +
-            "            bookingStatusId = ?,\n" +
-            "            roomId = COALESCE(?, roomId),\n" +
-            "            price = COALESCE(?, price),\n" +
+    private static final  String UPDATE_BOOKING = "UPDATE `web`.`booking`\n" +
+            "    SET \n" +
+            "            bookingStatusId = ?, \n" +
+            "            roomId = COALESCE(?, roomId), \n" +
+            "            price = COALESCE(?, price), \n" +
             "            preferedpaymentmethodid = COALESCE(?, preferedpaymentmethodid) \n" +
             "    WHERE bookingId = ?;";
 
-    private final static String INSERT_BOOKING = "INSERT INTO `web`.`booking` (`checkInDate`, `checkOutDate`, `adultsCount`, `childrenCount`, `comment`, `bookingStatusId`, `roomTypeId`, `GuestId`, `rateTypeId`) " +
+    private static final  String INSERT_BOOKING = "INSERT INTO `web`.`booking` (`checkInDate`, `checkOutDate`, `adultsCount`, `childrenCount`, `comment`, `bookingStatusId`, `roomTypeId`, `GuestId`, `rateTypeId`) " +
             "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-    private final static String INSERT_PREFERRED_PAYMENT_METHOD = "INSERT INTO `web`.`preferedpaymentmethod` " +
+    private static final  String INSERT_PREFERRED_PAYMENT_METHOD = "INSERT INTO `web`.`preferedpaymentmethod` " +
             "(`name`, `cardholderName`, `expirationDate`, `cardNumber`, `csvCode`, `paymentMethodId`) " +
             "VALUES (?, ?, ?, ?, ?, ?);";
 
-    private final static String INSERT_ROOM_AVAILABILITY = "INSERT INTO `web`.`roomavailability` (`date`, `roomId`) " +
+    private static final  String INSERT_ROOM_AVAILABILITY = "INSERT INTO `web`.`roomavailability` (`date`, `roomId`) " +
             "VALUES (?, ?);";
 
-    private final static String SELECT_BOOKINGS =
+    private static final  String SELECT_BOOKINGS =
             "SELECT b.checkInDate, b.checkOutDate, b.adultsCount, b.roomTypeId, rt.name roomTypeName, b.bookingStatusId, bs.name bookingStatusName, \n" +
                     "b.bookingId, b.childrenCount, b.comment, bs.name bookingStatusName, g.guestId, g.name guestName, g.mobile, g.email, g.address, \n" +
                     "r.roomId, r.name roomName, r.roomStatusId, pm.PreferedpaymentMethodId, pm.name paymentMethodName, pi.PaymentInfoId, pi.sum, pi.transactionId, \n" +
@@ -52,10 +52,13 @@ public class BookingDaoImpl implements IBookingDao {
                     "LEFT OUTER JOIN ratetype rat ON rat.rateTypeId = b.rateTypeId \n" +
                     "LEFT OUTER JOIN paymentinfo pi ON pi.PaymentInfoId= b.PaymentInfoId \n";
 
-    private final static String SELECT_BOOKING_BY_BOOKING_ID =
+    private static final  String SELECT_BOOKING_BY_BOOKING_ID =
             "SELECT b.checkInDate, b.checkOutDate, b.roomId, b.price, b.PreferedpaymentMethodId " +
                     "FROM booking b \n" +
                     "WHERE b.bookingId = ?;";
+
+
+
 
     @Override
     public List<Booking> getBookings() throws DAOException {
@@ -147,7 +150,7 @@ public class BookingDaoImpl implements IBookingDao {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error. Impossible to load bookings: " + e);
         }
         return bookings;
@@ -162,7 +165,7 @@ public class BookingDaoImpl implements IBookingDao {
                 statement.closeOnCompletion();
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error when deleting a booking: " + e);
         }
     }
@@ -184,7 +187,7 @@ public class BookingDaoImpl implements IBookingDao {
                 statement.executeUpdate();
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error when creating a booking: " + e);
         }
     }
@@ -232,7 +235,7 @@ public class BookingDaoImpl implements IBookingDao {
                 }
             }
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error when updating a booking: " + e);
         }
     }
@@ -242,7 +245,7 @@ public class BookingDaoImpl implements IBookingDao {
             LocalDate checkin = null;
             LocalDate checkout = null;
             int roomid = -1;
-            int dateDifInDays = -1;
+            int dateDifInDays;
 
             try (PreparedStatement statement = connection.prepareStatement(SELECT_BOOKING_BY_BOOKING_ID)) {
                 statement.setInt(1, bookingid);
@@ -266,7 +269,7 @@ public class BookingDaoImpl implements IBookingDao {
             }
 
         } catch (SQLException e) {
-            logger.error(e.getMessage());
+            LOGGER.error(e.getMessage());
             throw new DAOException("Error when updating a room availability: " + e);
         }
     }

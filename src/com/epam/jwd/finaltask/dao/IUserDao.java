@@ -12,7 +12,7 @@ public interface IUserDao {
     User getUserByNameAndPassword(String name, String password) throws DAOException;
     Guest getGuestByUserId(int userId) throws DAOException;
     int delete(int userid) throws DAOException;
-    int create(String name, String password, int userRoleId, String guestName, String mobile, String email, String address) throws DAOException;
+    void create(String name, String password, int userRoleId, String guestName, String mobile, String email, String address) throws DAOException;
     int update(int userId, String name, String password, int userRoleId, String guestName, String mobile, String email, String address) throws DAOException;
 }
 

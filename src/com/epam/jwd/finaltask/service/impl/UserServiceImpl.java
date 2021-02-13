@@ -12,7 +12,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 public class UserServiceImpl implements IUserService {
-    static final Logger logger = LoggerFactory.getLogger(RoomServiceImpl.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(RoomServiceImpl.class);
     private IUserDao UserDao = new UserDaoImpl();
 
     @Override
@@ -20,19 +20,17 @@ public class UserServiceImpl implements IUserService {
         try {
             return UserDao.getUsers();
         } catch (DAOException e) {
-            logger.error("Error when calling the method getUsers(): " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            LOGGER.error("Error when calling the method getUsers(): " + e.getMessage());
         }
+        return null;
     }
 
     @Override
     public int create(String name, String password, int userRoleId, String guestName, String mobile, String email, String address) {
         try {
-            return UserDao.create(name, password, userRoleId, guestName, mobile, email, address);
+            UserDao.create(name, password, userRoleId, guestName, mobile, email, address);
         } catch (DAOException e) {
-            logger.error("Error when calling the method createUsers(): " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method createUsers(): " + e.getMessage());
         }
         return -1;
     }
@@ -42,8 +40,7 @@ public class UserServiceImpl implements IUserService {
         try {
             return UserDao.update(userId, name, password, userRoleId, guestName, mobile, email, address);
         } catch (DAOException e) {
-            logger.error("Error when calling the method updateUsers(): " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method updateUsers(): " + e.getMessage());
         }
         return -1;
     }
@@ -53,8 +50,7 @@ public class UserServiceImpl implements IUserService {
         try {
             return UserDao.delete(userId);
         } catch (DAOException e) {
-            logger.error("Error when calling the method deleteUsers(): " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method deleteUsers(): " + e.getMessage());
         }
         return -1;
     }
@@ -62,15 +58,14 @@ public class UserServiceImpl implements IUserService {
     @Override
     public User getUserById(int UserId) {
         try {
-            List<User> Users = UserDao.getUsers();
-            for (User User : Users) {
-                if (User.getUserId() == UserId) {
-                    return User;
+            List<User> users = UserDao.getUsers();
+            for (User user : users) {
+                if (user.getUserId() == UserId) {
+                    return user;
                 }
             }
         } catch (DAOException e) {
-            logger.error("Error when calling the method getUserById(): " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method getUserById(): " + e.getMessage());
         }
         return null;
     }
@@ -80,7 +75,7 @@ public class UserServiceImpl implements IUserService {
         try {
             return UserDao.getUserByNameAndPassword(name, password);
         } catch (DAOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method getUserByNameAndPassword(): " + e.getMessage());
         }
         return null;
     }
@@ -90,19 +85,8 @@ public class UserServiceImpl implements IUserService {
         try {
             return UserDao.getGuestByUserId(userId);
         } catch (DAOException e) {
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method getGuestByUserId(): " + e.getMessage());
         }
         return null;
-    }
-
-    public static void main(String[] args) {
-        IUserService userService = new UserServiceImpl();
-        List<User> users = userService.getUsers();
-
-        for (User user : users) {
-            logger.debug(user.toString());
-            //System.out.println(booking);
-        }
-
     }
 }

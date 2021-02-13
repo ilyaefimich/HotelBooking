@@ -1,5 +1,7 @@
 package com.epam.jwd.finaltask.model;
 
+import java.util.Objects;
+
 public class RoomType {
     private int roomTypeId;
     private String name;
@@ -30,23 +32,19 @@ public class RoomType {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
         RoomType roomType = (RoomType) o;
-        if (roomType != null ? !roomType.equals(roomType.name) : roomType.name != null) return false;
-        return name != null ? name.equals(roomType.name) : roomType.name == null;
-
-
+        return roomTypeId == roomType.roomTypeId &&
+                Objects.equals(name, roomType.name);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 32 * result + (name != null ? name.hashCode() : 0);
-        return result;
-
-
+        return Objects.hash(roomTypeId, name);
     }
-
 }

@@ -29,11 +29,16 @@ public class UserRole {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
         UserRole userRole = (UserRole) o;
-        if (roleName != null ? !roleName.equals(userRole.roleName) : userRole.roleName != null) return false;
+        if (roleName != null ? !roleName.equals(userRole.roleName) : userRole.roleName != null) {
+            return false;
+        }
         return roleName != null ? roleName.equals(userRole.roleName) : userRole.roleName == null;
 
 

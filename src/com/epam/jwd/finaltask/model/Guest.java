@@ -1,5 +1,7 @@
 package com.epam.jwd.finaltask.model;
 
+import java.util.Objects;
+
 public class Guest {
     private int guestId;
     private String name;
@@ -69,21 +71,23 @@ public class Guest {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
         Guest guest = (Guest) o;
-        if (guest != null ? !guest.equals(guest.name) : guest.name != null) return false;
-        return name != null ? name.equals(guest.name) : guest.name == null;
+        return guestId == guest.guestId &&
+                userId == guest.userId &&
+                Objects.equals(name, guest.name) &&
+                Objects.equals(mobile, guest.mobile) &&
+                Objects.equals(email, guest.email) &&
+                Objects.equals(address, guest.address);
     }
 
     @Override
     public int hashCode() {
-        int result = name != null ? name.hashCode() : 0;
-        result = 32 * result + (name != null ? name.hashCode() : 0);
-        return result;
-
+        return Objects.hash(guestId, name, mobile, email, address, userId);
     }
-
-
 }

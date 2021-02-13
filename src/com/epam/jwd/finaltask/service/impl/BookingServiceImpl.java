@@ -14,7 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class BookingServiceImpl implements IBookingService {
-    static final Logger logger = LoggerFactory.getLogger(BookingServiceImpl.class);
+    static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
     private IBookingDao bookingDao = new BookingDaoImpl();
 
     @Override
@@ -22,10 +22,9 @@ public class BookingServiceImpl implements IBookingService {
         try {
             return bookingDao.getBookings();
         } catch (DAOException e) {
-            logger.error("Error when calling the method getBookings(): " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            LOGGER.error("Error when calling the method getBookings(): " + e.getMessage());
         }
+        return null;
     }
 
     @Override
@@ -39,8 +38,7 @@ public class BookingServiceImpl implements IBookingService {
                     .collect(Collectors.toList());
             return bookings;
         } catch (DAOException e) {
-            logger.error("Error when calling the method getBookingsByGuestId(): " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method getBookingsByGuestId(): " + e.getMessage());
         }
         return null;
     }
@@ -55,34 +53,11 @@ public class BookingServiceImpl implements IBookingService {
                 }
             }
         } catch (DAOException e) {
-            logger.error("Error when calling the method getBookingById(): " + e.getMessage());
-            e.printStackTrace();
+            LOGGER.error("Error when calling the method getBookingById(): " + e.getMessage());
         }
         return null;
     }
 
-
-    public Booking getEmptyBooking1() {
-        Booking booking = new Booking();
-        Room room = new Room();
-        booking.setOfferedRoom(room);
-
-        RoomType roomType = new RoomType();
-        booking.setRoomType(roomType);
-
-        Guest guest = new Guest();
-        booking.setGuest(guest);
-
-        BookingStatus bookingStatus = new BookingStatus();
-        bookingStatus.setBookingStatusId(-1);
-        booking.setBookingStatus(bookingStatus);
-
-        PaymentInfo paymentInfo = new PaymentInfo();
-        booking.setPaymentInfo(paymentInfo);
-
-        PaymentMethod paymentMethod = new PaymentMethod();
-        return booking;
-    }
 
     @Override
     public void create(String checkInDate, String checkOutDate, int adultsCount, int childrenCount, String comment, int roomTypeId, int guestId, int rateTypeId) {
@@ -92,9 +67,7 @@ public class BookingServiceImpl implements IBookingService {
             }
             bookingDao.create(checkInDate, checkOutDate, adultsCount, childrenCount, comment, roomTypeId, guestId, rateTypeId);
         } catch (DAOException e) {
-            logger.error("Error when calling the method update(): " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            LOGGER.error("Error when calling the method create(): " + e.getMessage());
         }
     }
 
@@ -103,9 +76,7 @@ public class BookingServiceImpl implements IBookingService {
         try {
             bookingDao.update(bookingid, roomId, newStatus, price, cardholderName, cardNumber, ccvCode, expirationDate, paymentMethodId);
         } catch (DAOException e) {
-            logger.error("Error when calling the method update(): " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            LOGGER.error("Error when calling the method update(): " + e.getMessage());
         }
 
     }
@@ -115,9 +86,7 @@ public class BookingServiceImpl implements IBookingService {
         try {
             bookingDao.delete(bookingid);
         } catch (DAOException e) {
-            logger.error("Error when calling the method delete(): " + e.getMessage());
-            e.printStackTrace();
-            throw new RuntimeException(e);
+            LOGGER.error("Error when calling the method delete(): " + e.getMessage());
         }
 
     }

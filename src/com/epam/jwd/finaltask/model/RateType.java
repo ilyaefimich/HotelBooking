@@ -24,8 +24,12 @@ public class RateType {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+        if (this == o){
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()){
+            return false;
+        }
         RateType rateType = (RateType) o;
         return rateTypeId == rateType.rateTypeId &&
                 Objects.equals(rateName, rateType.rateName);

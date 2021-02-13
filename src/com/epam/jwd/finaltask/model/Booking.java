@@ -20,7 +20,7 @@ public class Booking {
     private int price;
     private RateType rateType;
 
-    public RateType getRateType() {
+    public  RateType getRateType() {
         return rateType;
     }
 
