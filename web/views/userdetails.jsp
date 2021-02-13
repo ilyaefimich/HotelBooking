@@ -39,28 +39,28 @@
                                hidden="true">
 
                         <div class="col-md-6 mb-3">
-                            <label for="loginname">Full name</label>
+                            <label for="loginname"><fmt:message key="page.loginName"/></label>
                             <input name="loginname" type="text" class="form-control" id="loginname"
                                    placeholder="mylogin"
                                    required="required"
                                    value="${user.name}">
                             <div class="invalid-feedback">
-                                Valid login name is required.
+                                <fmt:message key="page.validLoginName"/>
                             </div>
                         </div>
                         <div class="col-md-6 mb-3">
-                            <label for="userPassword">Password</label>
+                            <label for="userPassword"><fmt:message key="page.password"/></label>
                             <input name="userPassword" type="password" class="form-control" id="userPassword"
                                    required="required"
                                    value="${user.password}">
                             <div class="invalid-feedback">
-                                Valid password is required.
+                                <fmt:message key="page.validPassword"/>
                             </div>
                         </div>
 
                         <c:if test="${(mode == \"create\" || mode == \"update\")}">
                             <div class="col-md-5 mb-3">
-                                <label for="userRole">User Role</label>
+                                <label for="userRole"><fmt:message key="page.User_role"/></label>
                                 <select class="form-select" id="userRole" name="userRole">
                                     <option value="1"
                                             <c:if test="${user.getUserRole().roleId == 1}">
@@ -76,45 +76,46 @@
                                     </option>
                                 </select>
                                 <div class="invalid-feedback">
-                                    Please select a valid role.
+                                    <fmt:message key="page.validRole"/>
                                 </div>
                             </div>
                         </c:if>
                         <div class="col-md-6 mb-3">
-                            <label for="guestName">Full name</label>
+                            <label for="guestName"><fmt:message key="page.guestName"/></label>
                             <input name="guestName" type="text" class="form-control" id="guestName"
                                    placeholder="John Smith"
                                    required="required"
                                    value="${guest.name}">
                             <div class="invalid-feedback">
-                                Valid guest name is required.
+                                <fmt:message key="page.validGuestName"/>
                             </div>
                         </div>
 
                         <div class="col-md-6 mb-3">
-                            <label for="mobile">Mobile</label>
+                            <label for="mobile"><fmt:message key="page.guestMobile"/></label>
                             <input type="text" class="form-control" name="mobile" id="mobile" placeholder="+71028493028"
                                    required="required"
                                    value="${guest.mobile}">
                             <div class="invalid-feedback">
-                                Valid guest's mobile phone number is required.
+                                <fmt:message key="page.validGuestMobile"/>
                             </div>
                         </div>
                         <div class="mb-3">
-                            <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                            <label for="email"><fmt:message key="page.emailAddress"/> <span class="text-muted">(Optional)</span></label>
                             <input type="email" class="form-control" name="email" id="email" placeholder="you@example.com"
                                    value="${guest.email}">
                             <div class="invalid-feedback">
-                                Please enter a valid email address.
+                                <fmt:message key="page.validEmailAddress"/>
+
                             </div>
                         </div>
 
                         <div class="mb-3">
-                            <label for="address">Address</label>
+                            <label for="address"><fmt:message key="page.address"/></label>
                             <input type="text" class="form-control" id="address" name="address" placeholder="1234 Main St"
                                    value="${guest.address}">
                             <div class="invalid-feedback">
-                                Please enter your shipping address.
+                                <fmt:message key="page.shippingAddress"/>
                             </div>
                         </div>
                     </div>

@@ -93,7 +93,7 @@
              style="padding-left: 30rem; padding-right: 10rem; padding-top: 10rem; padding-bottom: 10rem">
             <vld:error errorMessage="${error}"/>
             <div class="block">
-                <h4 class="mb-3">Booking Information</h4>
+                <h4 class="mb-3"><fmt:message key="page.booking_info"/></h4>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="checkin"><fmt:message key="page.booking_checkin"/></label>
@@ -118,7 +118,7 @@
                                required="required"
                                value="${booking.checkOutDate}" <c:out value="${isReadonly}"/>>
                         <div class="invalid-feedback">
-                            Valid date name is required.
+                            <fmt:message key="page.dateNameFeedback"/>
                         </div>
                     </div>
                 </div>
@@ -133,7 +133,7 @@
                                required="required"
                                value="${booking.adultsCount}" <c:out value="${isReadonly}"/>>
                         <div class="invalid-feedback">
-                            Valid number is required.
+                            <fmt:message key="page.numberFeedback"/>
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
@@ -142,7 +142,7 @@
                                required="required"
                                value="${booking.childrenCount}" <c:out value="${isReadonly}"/>>
                         <div class="invalid-feedback">
-                            Valid number is required.
+                            <fmt:message key="page.numberFeedback"/>
                         </div>
                     </div>
                     <div class="col-md-5 mb-3">
@@ -251,10 +251,10 @@
                     </div>
                 </div>
 
-                <h4 class="mb-3">Guest Information</h4>
+                <h4 class="mb-3"><fmt:message key="page.guestInfo"/></h4>
 
                 <div class="col-md-6 mb-3">
-                    <label for="guestName">Full name</label>
+                    <label for="guestName"><fmt:message key="page.guestFullName"/></label>
                     <input type="text" class="form-control" id="guestName" placeholder="John Smith" required="required"
                            value="${guest.name}" readonly>
                     <div class="invalid-feedback">
@@ -262,7 +262,7 @@
                     </div>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="guestMobile">Mobile</label>
+                    <label for="guestMobile"><fmt:message key="page.guestMobile"/></label>
                     <input type="text" class="form-control" id="guestMobile" placeholder="+71028493028"
                            required="required"
                            value="${guest.mobile}" readonly>
@@ -271,7 +271,7 @@
                     </div>
                 </div>
                 <div class="mb-3">
-                    <label for="email">Email <span class="text-muted">(Optional)</span></label>
+                    <label for="email"><fmt:message key="page.emailAddress"/><span class="text-muted">(Optional)</span></label>
                     <input type="email" class="form-control" id="email" placeholder="you@example.com"
                            value="${guest.email}" readonly>
                     <div class="invalid-feedback">
@@ -280,7 +280,7 @@
                 </div>
 
                 <div class="mb-3">
-                    <label for="address">Address</label>
+                    <label for="address"><fmt:message key="page.address"/></label>
                     <input type="text" class="form-control" id="address" placeholder="1234 Main St"
                            value="${guest.address}" readonly>
                     <div class="invalid-feedback">
@@ -295,42 +295,42 @@
                             value="${buttonSubmitText}"/></button>
                 </c:if>
                 <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Create booking</button>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit"><fmt:message key="page.createBooking"/></button>
                 </c:if>
             </c:if>
             <c:if test="${booking.getBookingStatus().bookingStatusId >= 2}">
-                <h4 class="mb-3">Payment</h4>
+                <h4 class="mb-3"><fmt:message key="page.payment"/></h4>
                 <div class="d-block my-3">
                     <div class="custom-control custom-radio" >
                         <input id="credit" name="paymentMethod" type="radio" class="custom-control-input"
                                checked="checked" <c:out value="${isPaymentDisabled}"/>>
-                        <label class="custom-control-label" for="credit">Credit card</label>
+                        <label class="custom-control-label" for="credit"><fmt:message key="page.creditCard"/></label>
                     </div>
                     <div class="custom-control custom-radio">
                         <input id="debit" name="paymentMethod" type="radio" class="custom-control-input"
                             <c:out value="${isPaymentDisabled}"/>>
-                        <label class="custom-control-label" for="debit">Debit card</label>
+                        <label class="custom-control-label" for="debit"><fmt:message key="page.debitCard"/></label>
                     </div>
                     <div class="custom-control custom-radio">
                         <input id="paypal" name="paymentMethod" type="radio" class="custom-control-input"
                             <c:out value="${isPaymentDisabled}"/>>
-                        <label class="custom-control-label" for="paypal">Paypal</label>
+                        <label class="custom-control-label" for="paypal"><fmt:message key="page.paypal"/></label>
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label for="cardName">Name on card</label>
+                        <label for="cardName"><fmt:message key="page.nameOnCard"/></label>
                         <input type="text" class="form-control" id="cardName" name="cardName" placeholder=""
                             <c:out value="${isPaymentReadonly}"/>
                                value="${booking.getPreferedPaymentMethod().cardholderName}">
-                        <small class="text-muted">Full name as displayed on card</small>
+                        <small class="text-muted"><fmt:message key="page.cardHolderName"/></small>
                         <div class="invalid-feedback">
                             Name on card is required
                         </div>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label for="cardNumber">Credit card number</label>
+                        <label for="cardNumber"><fmt:message key="page.creditCardNumber"/></label>
                         <input type="text" class="form-control" id="cardNumber" name="cardNumber" placeholder=""
                             <c:out value="${isPaymentReadonly}"/>
                                value="${booking.getPreferedPaymentMethod().cardNumber}">
@@ -341,7 +341,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-3 mb-3">
-                        <label for="expirationDate">Expiration</label>
+                        <label for="expirationDate"><fmt:message key="page.expiration"/></label>
                         <input type="text" class="form-control" id="expirationDate" name="expirationDate" placeholder=""
                             <c:out value="${isPaymentReadonly}"/>
                                value="${booking.getPreferedPaymentMethod().expirationDate}">
@@ -350,7 +350,7 @@
                         </div>
                     </div>
                     <div class="col-md-3 mb-3">
-                        <label for="cvvCode">CVV</label>
+                        <label for="cvvCode"><fmt:message key="page.CVV"/></label>
                         <input type="text" class="form-control" id="cvvCode" name="cvvCode" placeholder=""
                             <c:out value="${isPaymentReadonly}"/> value="${booking.getPreferedPaymentMethod().csvCode}">
                         <div class="invalid-feedback">
@@ -365,33 +365,33 @@
                 <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
                     <div class="custom-control custom-checkbox" >
                         <input type="checkbox" class="custom-control-input" id="save-info" <c:out value="${isPaymentDisabled}"/>>
-                        <label class="custom-control-label" for="save-info">Save this information for next time</label>
+                        <label class="custom-control-label" for="save-info"><fmt:message key="page.saveInfo"/></label>
                     </div>
                     <hr class="mb-4">
                     <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="5"
                            hidden="true">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Confirm</button>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit"><fmt:message key="page.confirm"/></button>
                 </c:if>
                 <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
                     <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="5"
                            hidden="true">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Confirm booking</button>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit"><fmt:message key="page.confirmBooking"/></button>
                 </c:if>
             </c:if>
             <c:if test="${booking.getBookingStatus().bookingStatusId == 1}">
                 <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"guest\") }">
                     <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="4"
                            hidden="true">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Cancel booking</button>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit"><fmt:message key="page.cancelBooking"/></button>
                 </c:if>
                 <c:if test="${loggeduser.getUserRole().getRoleName().toLowerCase().equals(\"admin\") }">
                     <input type="text" class="custom-control-input" name="newStatus" id="newStatus" value="2"
                            hidden="true">
-                    <button class="btn btn-primary btn-lg btn-block" type="submit">Propose room</button>
+                    <button class="btn btn-primary btn-lg btn-block" type="submit"><fmt:message key="page.proposeRoom"/></button>
                 </c:if>
             </c:if>
             <a href="./controller?command=getbookings" id="cancel" name="cancel"
-               class="btn btn-primary btn-lg btn-block">Cancel</a>
+               class="btn btn-primary btn-lg btn-block"><fmt:message key="page.cancel"/></a>
         </div>
     </form>
 

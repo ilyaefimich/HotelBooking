@@ -22,7 +22,7 @@
 <div class="container-fluid"
      style="padding-left: 30rem; padding-right: 20rem; padding-bottom: 10rem ">
 
-    <h1 align="center">Bookings</h1>
+    <h1 align="center"><fmt:message key="page.bookings"/></h1>
 
     <form method="POST" action="./controller?command=bookingdetails&mode=create">
         <div class="row text-right">
@@ -90,17 +90,17 @@
 
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title" id="myModalLabel">Confirm Delete</h4>
+                <h4 class="modal-title" id="myModalLabel"><fmt:message key="page.confirmDelete"/></h4>
             </div>
 
             <div class="modal-body">
-                <p>You are about to delete one track, this procedure is irreversible.</p>
-                <p>Do you want to proceed?</p>
+                <p><fmt:message key="page.messageBeforeDelete1"/></p>
+                <p><fmt:message key="page.messageBeforeDelete2"/></p>
             </div>
 
             <div class="modal-footer">
-                <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                <a class="btn btn-danger btn-ok">Delete</a>
+                <button type="button" class="btn btn-default" data-dismiss="modal"><fmt:message key="page.cancel"/></button>
+                <a class="btn btn-danger btn-ok"><fmt:message key="page.delete"/></a>
             </div>
         </div>
     </div>
