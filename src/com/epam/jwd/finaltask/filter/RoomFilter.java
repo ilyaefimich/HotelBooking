@@ -15,11 +15,13 @@ import java.util.List;
 @WebFilter(filterName = "RoomFilter", urlPatterns = {"/views/rooms.jsp"}, dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST})
 public class RoomFilter implements Filter {
 
+
+
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         IRoomService roomService = new RoomServiceImpl();
-        List<Room> rooms = roomService.getRooms();
+        List<Room> rooms = roomService.getAllRooms();
         request.setAttribute(Attributes.ROOMS, rooms);
         request.getSession().setAttribute(Attributes.ROOMS, rooms);
         filterChain.doFilter(servletRequest, servletResponse);
