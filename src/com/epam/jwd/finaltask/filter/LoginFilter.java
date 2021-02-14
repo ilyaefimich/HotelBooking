@@ -20,6 +20,7 @@ public class LoginFilter implements Filter {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
         HttpServletResponse response = (HttpServletResponse) servletResponse;
 
+        //Ignore requests where commands are login and sign up or the command is not specified
         String param = request.getParameter("command");
         if (param != null && (param.equals("login") || param.equals("signup"))) {
             filterChain.doFilter(request, response);
