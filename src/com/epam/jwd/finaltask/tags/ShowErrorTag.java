@@ -16,7 +16,7 @@ public class ShowErrorTag extends SimpleTagSupport {
 
     public void doTag() throws JspException, IOException {
         if (errorMessage != null && !errorMessage.equals("")) {
-            /* Use message from attribute */
+            // Use message from attribute to show it in alert message formatted by bootstrap
             String html = "<div class=\"alert alert-warning\" role=\"alert\">" + errorMessage + "</div>";
             JspWriter out = getJspContext().getOut();
             out.println(html);
