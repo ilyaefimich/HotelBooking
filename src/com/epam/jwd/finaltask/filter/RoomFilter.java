@@ -11,7 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * RoomFilter get the list of rooms before it goes to rooms.jsp
+ */
 @WebFilter(filterName = "RoomFilter", urlPatterns = {"/views/rooms.jsp"}, dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST})
 public class RoomFilter implements Filter {
 

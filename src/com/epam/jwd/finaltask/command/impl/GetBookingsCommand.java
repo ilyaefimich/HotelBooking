@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
+/**
+ * GetBookingsCommand returns list of bookings and forwards to bookings.jsp
+ */
 public class GetBookingsCommand extends AbstractCommand {
     private IBookingService bookingService = new BookingServiceImpl();
     private IUserService userService = new UserServiceImpl();
@@ -25,6 +28,7 @@ public class GetBookingsCommand extends AbstractCommand {
         if (loggeduser.getUserRole().getRoleId() == 2) {
             bookings = bookingService.getAllBookings();
         } else {
+            //Return bookings which belong to the guest only
             Guest guest = userService.getGuestByUserId(loggeduser.getUserId());
             bookings = bookingService.getBookingsByGuestId(guest.getGuestId());
         }

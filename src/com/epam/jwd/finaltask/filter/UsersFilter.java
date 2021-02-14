@@ -11,7 +11,9 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
-
+/**
+ * UsersFilter get the list of users before it goes to users.jsp
+ */
 @WebFilter(filterName = "UsersFilter", urlPatterns = {"/views/users.jsp"}, dispatcherTypes = {DispatcherType.FORWARD, DispatcherType.REQUEST})
 public class UsersFilter implements Filter {
 

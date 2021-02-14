@@ -41,7 +41,7 @@ public class UpdateBookingCommand extends AbstractCommand {
                 String cardNumber = request.getParameter("cardNumber");
                 String expirationDate = request.getParameter("expirationDate");
                 String cvvCode = request.getParameter("cvvCode");
-                String paymentMethodId = request.getParameter("paymentMethod");
+                //String paymentMethodId = request.getParameter("paymentMethod"); //TODO save payment params to db and show when create a new booking
 
                 if (roomid != null) {
                     Integer roomId = Integer.parseInt(roomid);
@@ -53,13 +53,11 @@ public class UpdateBookingCommand extends AbstractCommand {
 
             }
 
-        return Pages.GETBOOKINGS;
-    } catch(
-    ValidationError ve)
-
-    {
-        request.setAttribute("error", ve.getErrorCode());
-        return Pages.BOOKINGDETAILS;
+            return Pages.GETBOOKINGS;
+        } catch (
+                ValidationError ve) {
+            request.setAttribute("error", ve.getErrorDescription());
+            return Pages.BOOKINGDETAILS;
+        }
     }
-}
 }

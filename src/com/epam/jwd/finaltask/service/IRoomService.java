@@ -6,7 +6,9 @@ import com.epam.jwd.finaltask.model.RoomStatus;
 import com.epam.jwd.finaltask.model.RoomType;
 
 import java.util.List;
-
+/**
+ * Provides methods for application to manage rooms.
+ */
 public interface IRoomService {
     List<Room> getReadyToUseRooms();
 

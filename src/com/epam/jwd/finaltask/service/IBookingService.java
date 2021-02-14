@@ -4,6 +4,9 @@ import com.epam.jwd.finaltask.model.Booking;
 
 import java.util.List;
 
+/**
+ * Provides methods for application to manage bookings.
+ */
 public interface IBookingService {
     List<Booking> getAllBookings();
     List<Booking> getBookingsByGuestId(int guestId);

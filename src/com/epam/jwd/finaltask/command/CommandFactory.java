@@ -3,6 +3,9 @@ package com.epam.jwd.finaltask.command;
 
 import com.epam.jwd.finaltask.command.impl.*;
 
+/**
+ * CommandFactory returns instance of a specific command implementation based on the enumeration list.
+ */
 public enum CommandFactory {
     LOGIN {
         public AbstractCommand createCommand() {
@@ -55,22 +58,46 @@ public enum CommandFactory {
         }
     },
     GETROOMS {
-        public AbstractCommand createCommand() { return new GetRoomsCommand(); }
+        public AbstractCommand createCommand() {
+            return new GetRoomsCommand();
+        }
     },
-    GETAVAILABLEROOM {
-        public AbstractCommand createCommand(){ return new GetAvailableRoomCommand(); }
-        },
+    DELETEROOM {
+        public AbstractCommand createCommand() {
+            return new DeleteRoomCommand();
+        }
+
+    },
+    UPDATEROOM {
+        public AbstractCommand createCommand() {
+            return new UpdateRoomCommand();
+        }
+
+    },
+    GETROOMDETAILS {
+        public AbstractCommand createCommand() {
+            return new GetRoomDetailsCommand();
+        }
+    },
     SIGNUP {
-        public AbstractCommand createCommand(){ return new SignupCommand(); }
+        public AbstractCommand createCommand() {
+            return new SignupCommand();
+        }
     },
     GETPROFILE {
-        public AbstractCommand createCommand(){ return new GetProfileCommand(); }
+        public AbstractCommand createCommand() {
+            return new GetProfileCommand();
+        }
     },
     UPDATEPROFILE {
-        public AbstractCommand createCommand(){ return new UpdateProfileCommand(); }
+        public AbstractCommand createCommand() {
+            return new UpdateProfileCommand();
+        }
     },
     UPDATEBOOKING {
-        public AbstractCommand createCommand() { return new UpdateBookingCommand(); }
+        public AbstractCommand createCommand() {
+            return new UpdateBookingCommand();
+        }
     };
 
     public abstract AbstractCommand createCommand();

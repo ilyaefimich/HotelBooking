@@ -12,11 +12,17 @@ import org.slf4j.LoggerFactory;
 import java.sql.Date;
 import java.util.List;
 import java.util.stream.Collectors;
-
+/**
+ * Class implements interface IBookingService. Provides methods to manage bookings.
+ */
 public class BookingServiceImpl implements IBookingService {
     static final Logger LOGGER = LoggerFactory.getLogger(BookingServiceImpl.class);
     private IBookingDao bookingDao = new BookingDaoImpl();
 
+    /**
+     * Returns all bookings records.
+     * @return Returns list of bookings.
+     */
     @Override
     public List<Booking> getAllBookings() {
         try {
@@ -27,6 +33,11 @@ public class BookingServiceImpl implements IBookingService {
         return null;
     }
 
+    /**
+     * Method returns bookings by guest id.
+     * @param guestId Guest id
+     * @return Returns list of bookings.
+     */
     @Override
     public List<Booking> getBookingsByGuestId(int guestId) {
 
@@ -43,6 +54,11 @@ public class BookingServiceImpl implements IBookingService {
         return null;
     }
 
+    /**
+     *
+     * @param bookingId
+     * @return
+     */
     @Override
     public Booking getBookingById(int bookingId) {
         try {

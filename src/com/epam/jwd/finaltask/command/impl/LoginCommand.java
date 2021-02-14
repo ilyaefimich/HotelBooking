@@ -21,11 +21,13 @@ public class LoginCommand extends AbstractCommand {
         String password = request.getParameter("user-password");
         User user = userService.getUserByNameAndPassword(login, password);
         request.getSession().setAttribute("locale", new Locale("en", "EN"));
+        //If user with such login name and password was not found then return back to login screen showing error message
         if (user != null) {
             request.getSession().setAttribute(Attributes.LOGGEDUSER, user);
             return Pages.HOME;
 
         } else if (login != null || password != null) {
+            //Set attribute error to be shown as an error message by custom tag in jsp
             request.setAttribute("error", "Incorrect user name or password, please, try again.");
             return Pages.LOGIN;
         } else {
