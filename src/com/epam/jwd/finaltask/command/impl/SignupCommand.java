@@ -34,7 +34,7 @@ public class SignupCommand extends AbstractCommand {
 
                 if (user != null) {
                     request.getSession().setAttribute(Attributes.LOGGEDUSER, user);
-                    return Pages.GETBOOKINGS;
+                    return Pages.HOME;
 
                 } else if (login != null || password != null){
                     request.setAttribute("error", "Incorrect user name or password, please, try again.");

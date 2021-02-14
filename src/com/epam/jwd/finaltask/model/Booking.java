@@ -1,9 +1,10 @@
 package com.epam.jwd.finaltask.model;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
 
-public class Booking {
+public class Booking implements Serializable {
     private int bookingId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;

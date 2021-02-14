@@ -28,6 +28,7 @@
 
                         <vld:error errorMessage="${error}"/>
 
+
                         <form name="loginForm" action="/jwd_web_project_war_exploded/controller?command=login"
                               method="post">
                             <div class="form-group">

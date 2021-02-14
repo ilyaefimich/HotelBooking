@@ -97,11 +97,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="checkin"><fmt:message key="page.booking_checkin"/></label>
-                        <c:if test="${error == 123}">
-                            <c:set var="isCheckinInvalid" scope="page" value="is-invalid"/>
-                            <c:set var="checkinValidationMessage" scope="page"
-                                   value="Check-in Date Has To Be Befor Checkout date"/>
-                        </c:if>
+
 
                         <input name="checkin" type="date" class="form-control" id="checkin" placeholder="01.01.2021"
                                required="required"
