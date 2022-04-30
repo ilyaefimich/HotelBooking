@@ -18,7 +18,7 @@
 <div class="container-fluid">
     <div class="panel panel-success">
         <div class="panel-heading" align="center">
-            <h4>Login</h4>
+            <h4><fmt:message key="page.calculateRoomPriorities"/></h4>
         </div>
 
         <div class="panel-body" align="center">
@@ -29,25 +29,20 @@
                         <vld:error errorMessage="${error}"/>
 
 
-                        <form name="loginForm" action="./controller?command=login"
-                              method="post">
+                        <form name="fileUploadForm" action="../controller?command=calculateroompriority"
+                              method="post" enctype="multipart/form-data">
                             <div class="form-group">
-                                <label><fmt:message key="page.login"/></label> <input
-                                    type="text" class="form-control" name="user-login" id="user-name-id"
-                                    placeholder="User Name" required="required">
-                            </div>
-                            <div class="form-group">
-                                <label><fmt:message key="page.password"/></label> <input
-                                    type="password" class="form-control" name="user-password" id="user-password-id"
-                                    placeholder="Password" required="required">
+                                <label for="file"><fmt:message key="page.selectScvFile"/></label>
+                                <input type="file" name="dataFile" class="form-control-file" id="file">
                             </div>
                             <button type="submit" style="width: 100%;"
-                                    class="btn btn-large btn btn-success btn-lg btn-block"><b><fmt:message
-                                    key="page.enter"/></b></button>
+                                    class="btn btn-large btn btn-success btn-lg btn-block">
+                                <b>Submit</b>
+                            </button>
                         </form>
                     </div>
                 </div>
-                <a class="nav-link" href="./controller?command=signup"><fmt:message key="page.signup"/></a>
+                <a class="nav-link" href="./index.jsp"><fmt:message key="page.cancel"/></a>
             </div>
         </div>
     </div>

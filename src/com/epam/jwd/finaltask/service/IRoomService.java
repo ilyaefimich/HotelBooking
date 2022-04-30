@@ -14,7 +14,7 @@ public interface IRoomService {
 
     List<Room> getAllRooms();
 
-    List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate);
+    List<Room> getAvailableRoomsByRoomTypeAndDates(int guestTypeId, int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate);
     List<RateType> getRateTypesByRoomType(int roomTypeId);
     List<RoomType> getRoomTypes();
     List<RoomStatus> getRoomStatuses();

@@ -41,7 +41,7 @@ public class GetBookingDetailsCommand extends AbstractCommand {
         } else if (mode.equals("update")) {
             int bookingId = Integer.parseInt(request.getParameter("bookingid"));
             Booking booking = bookingService.getBookingById(bookingId);
-            List<Room> rooms = roomService.getAvailableRoomsByRoomTypeAndDates(booking.getRoomType().getRoomTypeId(), booking.getRateType().getRateTypeId(), booking.getCheckInDate().toString(), booking.getCheckOutDate().toString());
+            List<Room> rooms = roomService.getAvailableRoomsByRoomTypeAndDates(booking.getGuestType().getGuestTypeId(), booking.getRoomType().getRoomTypeId(), booking.getRateType().getRateTypeId(), booking.getCheckInDate().toString(), booking.getCheckOutDate().toString());
             List<RateType> rateTypes = roomService.getRateTypesByRoomType(1);
 
             request.setAttribute("rooms", rooms);

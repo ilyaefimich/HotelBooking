@@ -44,9 +44,9 @@ public class RoomServiceImpl implements IRoomService {
     }
 
     @Override
-    public List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate) {
+    public List<Room> getAvailableRoomsByRoomTypeAndDates(int guestTypeId, int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate) {
         try {
-            return roomDao.getAvailableRoomsByRoomTypeAndDates(roomTypeId, rateTypeId, checkinDate, checkoutDate);
+            return roomDao.getAvailableRoomsByRoomTypeAndDates(guestTypeId, roomTypeId, rateTypeId, checkinDate, checkoutDate);
         } catch (DAOException e) {
             LOGGER.error("Error when calling the method getAvailableRoomsByRoomTypeAndDates(): " + e.getMessage());
         }

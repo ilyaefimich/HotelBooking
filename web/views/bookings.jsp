@@ -9,11 +9,14 @@
     <meta charset="UTF-8">
     <title>Bookings</title>
     <script data-require="jquery@*" data-semver="2.0.3" src="http://code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="./js/table2CSV.js"/>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"
             integrity="sha384-wfSDF2E50Y2D1uUdj0O3uMBJnjuUD4Ih7YwaYd1iqfktj0Uod8GCExl3Og8ifwB6"
             crossorigin="anonymous"></script>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css"
           integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+
+    <%--<script src="./js/table2excel.js"/>--%>
 
 </head>
 <body>
@@ -30,6 +33,7 @@
                 <input type="submit" value="<fmt:message key="page.add_booking"/>"
                        class="btn btn-primary btn-xs pull-right"/>
             </div>
+
         </div>
     </form>
 
@@ -38,7 +42,7 @@
 
     <table id="bookingsTable" class="table">
         <tr>
-            <th><fmt:message key="page.booking_id"/></th>
+            <th><fmt:message key="page.booking_id"/></th>O
             <th><fmt:message key="page.booking_checkin"/></th>
             <th><fmt:message key="page.booking_checkout"/></th>
             <th><fmt:message key="page.booking_adults"/></th>
@@ -115,6 +119,27 @@
     });
 
     $(document).ready(function () {
+        /*var table = $('#bookingsTable').DataTable();*/
+      /*  var $table1 = $('#bookingsTable');
+        $('#btn-export').click(function() {
+            $table1.tableExport({
+                type: 'csv',
+                escape: false,
+                exportDataType: 'all',
+                refreshOptions: {
+                    exportDataType: 'all'
+                }
+            });
+        });
+
+        $('#btn-export1').on('click', function(){
+            $('<table>').append(table.$('tr').clone()).table2excel({
+                exclude: ".excludeThisClass",
+                name: "Bookings export",
+                filename: "BookingsExport" //do not include extension
+            });
+        });
+*/
         $("#bookingsSearch").on("keyup", function () {
             var value = $(this).val().toLowerCase();
             $("#bookingsTable tr").filter(function () {
@@ -122,9 +147,26 @@
             });
         });
 
-        $('#bookingsTable').DataTable();
+      //  $('#bookingsTable').DataTable();
     });
 
+    $(document).ready(function () {
+        $('table').each(function () {
+            var $table = $(this);
+
+            var $button = $("<button type='button'>");
+            $button.text("Excel");
+            $button.insertAfter($table);
+
+            $button.click(function () {
+                var csv = $table.table2CSV({
+                    delivery: 'value'
+                });
+                window.location.href = 'data:text/csv;charset=UTF-8,'
+                    + encodeURIComponent(csv);
+            });
+        });
+    })
 </script>
 
 </body>

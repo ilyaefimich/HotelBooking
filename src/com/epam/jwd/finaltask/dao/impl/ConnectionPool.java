@@ -19,10 +19,10 @@ public final class ConnectionPool {
 
     static final Logger LOGGER = LoggerFactory.getLogger(ConnectionPool.class);
 
-    private static AtomicBoolean isPoolCreated = new AtomicBoolean(false);
-    private static AtomicBoolean isPoolClosed = new AtomicBoolean(false);
-    private static Lock connectionPoolLock = new ReentrantLock(true);
-    private static Lock closePoolLock = new ReentrantLock(true);
+‘‚‚    private static final AtomicBoolean isPoolCreated = new AtomicBoolean(false);
+    private static final AtomicBoolean isPoolClosed = new AtomicBoolean(false);
+    private static final Lock connectionPoolLock = new ReentrantLock(true);
+    private static final Lock closePoolLock = new ReentrantLock(true);
     private static int connectionAmount = 0;
 
     private BlockingQueue<DBConnection> availableConnections;
@@ -65,18 +65,26 @@ public final class ConnectionPool {
     }
 
     public static ConnectionPool getInstance() {
-        if (!isPoolCreated.get()) {
-            connectionPoolLock.lock();
-            try {
-                if (poolInstance == null) {
+        synchronized (ConnectionPool.class) {
+            if(poolInstance == null) {
+                synchronized (ConnectionPool.class) {
                     poolInstance = new ConnectionPool();
-                    isPoolCreated.set(true);
                 }
-            } finally {
-                connectionPoolLock.unlock();
             }
         }
         return poolInstance;
+//        if (!isPoolCreated.get()) {
+//            connectionPoolLock.lock();
+//            try {
+//                if (poolInstance == null) {
+//
+//                    isPoolCreated.set(true);
+//                }
+//            } finally {
+//                connectionPoolLock.unlock();
+//            }
+//        }
+//        return poolInstance;
     }
 
     public Connection getConnection() {

@@ -16,6 +16,7 @@ public class UpdateBookingCommand extends AbstractCommand {
     private IBookingService bookingService = new BookingServiceImpl();
     private IUserService userService = new UserServiceImpl();
 
+
     @Override
     public String execute(HttpServletRequest request, HttpServletResponse response) {
         String mode = request.getParameter("mode");
@@ -30,8 +31,9 @@ public class UpdateBookingCommand extends AbstractCommand {
                 Guest guest = userService.getGuestByUserId(userId);
                 int roomTypeId = Integer.parseInt(request.getParameter("roomtype"));
                 int rateTypeId = Integer.parseInt(request.getParameter("rateType"));
+                int guestTypeId = Integer.parseInt(request.getParameter("guestType"));
                 //int price = Integer.parseInt(request.getParameter("price"));
-                bookingService.create(checkin, checkout, adultsCount, childrenCount, comment, roomTypeId, guest.getGuestId(), rateTypeId);
+                bookingService.create(checkin, checkout, adultsCount, childrenCount, comment, roomTypeId, guest.getGuestId(),rateTypeId, guestTypeId);
             } else if (mode.equals("update")) {
                 int bookingId = Integer.parseInt(request.getParameter("bookingid"));
                 String roomid = request.getParameter("roomid");

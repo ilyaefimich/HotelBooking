@@ -32,7 +32,7 @@ public class RoomDaoImpl implements IRoomDao {
             "    SET\n" +
             "            name = ?,\n" +
             "            roomType = ?,\n" +
-            "            roomStatus = ?,\n"+
+            "            roomStatus = ?,\n" +
             "    WHERE roomId = ?";
 
 
@@ -48,12 +48,17 @@ public class RoomDaoImpl implements IRoomDao {
                     "LEFT OUTER JOIN room r ON r.roomId = b.roomId \n";
 
     private static final String SELECT_AVAILABLE_ROOMS =
-            "SELECT DISTINCT r.roomId, r.name, rat.price\n" +
+            "SELECT DISTINCT r.roomId, concat(r.name,  \" (\",  rp.priority ,  \")\") room, rat.price, rt.name, rat" +
+                    ".ratetypeId " +
                     "FROM web.room r\n" +
                     "LEFT OUTER JOIN roomType rt ON rt.roomTypeId = r.roomTypeId\n" +
                     "LEFT OUTER JOIN roomavailability ra ON ra.roomId = r.roomId\n" +
                     "LEFT OUTER JOIN rate rat ON rat.roomTypeId = r.roomTypeId\n" +
-                    "WHERE r.roomStatusId = 1 AND rt.roomTypeId = ? AND rat.ratetypeId = ? AND (ra.date NOT BETWEEN ? AND ? OR ra.date IS NULL)";
+                    "LEFT OUTER JOIN roompriority rp ON rp.roomId = r.roomId\n" +
+                    "WHERE r.roomStatusId = 1 AND rt.roomTypeId = ? AND rat.ratetypeId = ? \n" +
+                    "AND (ra.date NOT BETWEEN ? AND ? OR ra.date IS NULL) \n" +
+                    "AND rp.guesttype = ? \n" +
+                    "order by rp.priority desc";
 
     private static final String SELECT_RATE_TYPES =
             "SELECT rt.ratetypeId, rt.name\n" +
@@ -148,7 +153,8 @@ public class RoomDaoImpl implements IRoomDao {
     }
 
     @Override
-    public List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate) throws DAOException {
+    public List<Room> getAvailableRoomsByRoomTypeAndDates(int guestTypeId, int roomTypeId, int rateTypeId, String checkinDate,
+                                                          String checkoutDate) throws DAOException {
         List<Room> rooms = null;
         try {
             try (Connection connection = ConnectionPool.getInstance().getConnection()) {
@@ -157,6 +163,7 @@ public class RoomDaoImpl implements IRoomDao {
                     statement.setInt(2, rateTypeId);
                     statement.setDate(3, Date.valueOf(checkinDate));
                     statement.setDate(4, Date.valueOf(checkoutDate));
+                    statement.setInt(5, guestTypeId);
                     try (ResultSet rs = statement.executeQuery()) {
                         rooms = new ArrayList<Room>();
                         Room room;
@@ -206,70 +213,67 @@ public class RoomDaoImpl implements IRoomDao {
                     }
                 }
             }
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            throw new DAOException("Error. Impossible to load rooms: " + e);
+        }
+        return rooms;
+    }
+
+    @Override
+    public void delete(int roomid) throws DAOException {
+        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(DELETE_ROOM)) {
+                statement.setInt(1, roomid);
+                statement.executeUpdate();
+                statement.closeOnCompletion();
+            }
+
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            throw new DAOException("Error when deleting a room: " + e);
+        }
+    }
+
+    @Override
+    public void create(String roomName, int roomType, int roomStatus) throws DAOException {
+        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
+            try (PreparedStatement statement = connection.prepareStatement(INSERT_ROOM)) {
+                statement.setString(1, roomName);
+                statement.setInt(2, roomType);
+                statement.setInt(3, roomStatus);
+                statement.executeUpdate();
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage());
-                throw new DAOException("Error. Impossible to load rooms: " + e);
+                throw new DAOException("Error when creating a room: " + e);
             }
-            return rooms;
+        } catch (SQLException e) {
+            LOGGER.error(e.getMessage());
+            throw new DAOException("Error when deleting a room: " + e);
         }
+    }
 
-        @Override
-        public void delete ( int roomid) throws DAOException {
-            try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-                try (PreparedStatement statement = connection.prepareStatement(DELETE_ROOM)) {
-                    statement.setInt(1, roomid);
-                    statement.executeUpdate();
-                    statement.closeOnCompletion();
-                }
+    @Override
+    public void update(int roomId, String roomName, int roomStatus, int roomType) throws DAOException {
+        try (Connection connection = ConnectionPool.getInstance().getConnection()) {
 
+            try (PreparedStatement statement = connection.prepareStatement(UPDATE_ROOM)) {
+
+                statement.setString(1, roomName);
+                statement.setInt(2, roomType);
+                statement.setInt(3, roomStatus);
+                statement.setInt(4, roomId);
+                statement.executeUpdate();
             } catch (SQLException e) {
                 LOGGER.error(e.getMessage());
-                throw new DAOException("Error when deleting a room: " + e);
+                throw new DAOException("Error when updating a room: " + e);
             }
-        }
-
-        @Override
-        public void create (String roomName, int roomType, int roomStatus) throws DAOException {
-            try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-                try (PreparedStatement statement = connection.prepareStatement(INSERT_ROOM)) {
-                    statement.setString(1, roomName);
-                    statement.setInt(2, roomType);
-                    statement.setInt(3, roomStatus);
-                    statement.executeUpdate();
-                } catch (SQLException e) {
-                    LOGGER.error(e.getMessage());
-                    throw new DAOException("Error when creating a room: " + e);
-                }
-            } catch (SQLException e) {
-                LOGGER.error(e.getMessage());
-                throw new DAOException("Error when deleting a room: " + e);
-            }
-        }
-
-        @Override
-        public void update ( int roomId, String roomName, int roomStatus, int roomType) throws DAOException {
-            try (Connection connection = ConnectionPool.getInstance().getConnection()) {
-
-                    try (PreparedStatement statement = connection.prepareStatement(UPDATE_ROOM)) {
-
-                        statement.setString(1, roomName);
-                        statement.setInt(2, roomType);
-                        statement.setInt(3, roomStatus);
-                        statement.setInt(4, roomId);
-                        statement.executeUpdate();
-                    } catch (SQLException e) {
-                        LOGGER.error(e.getMessage());
-                        throw new DAOException("Error when updating a room: " + e);
-                    }
-            } catch (SQLException throwables) {
-                throwables.printStackTrace();
-            }
-
-
-
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
         }
 
 
+    }
 
 
 }

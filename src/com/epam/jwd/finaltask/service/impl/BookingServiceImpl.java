@@ -76,18 +76,6 @@ public class BookingServiceImpl implements IBookingService {
 
 
     @Override
-    public void create(String checkInDate, String checkOutDate, int adultsCount, int childrenCount, String comment, int roomTypeId, int guestId, int rateTypeId) {
-        try {
-            if (Date.valueOf(checkInDate).after(Date.valueOf(checkOutDate))) {
-                throw new ValidationError(ValidationError.CHECKIN_DATE_HAS_TO_BE_BEFORE_CHECKOUT_DATE);
-            }
-            bookingDao.create(checkInDate, checkOutDate, adultsCount, childrenCount, comment, roomTypeId, guestId, rateTypeId);
-        } catch (DAOException e) {
-            LOGGER.error("Error when calling the method create(): " + e.getMessage());
-        }
-    }
-
-    @Override
     public void update(int bookingid, Integer roomId, int newStatus, Integer price, String cardholderName, String cardNumber, String ccvCode, String expirationDate, int paymentMethodId) {
         try {
             bookingDao.update(bookingid, roomId, newStatus, price, cardholderName, cardNumber, ccvCode, expirationDate, paymentMethodId);
@@ -105,5 +93,17 @@ public class BookingServiceImpl implements IBookingService {
             LOGGER.error("Error when calling the method delete(): " + e.getMessage());
         }
 
+    }
+
+    @Override
+    public void create(String checkInDate, String checkOutDate, int adultsCount, int childrenCount, String comment, int roomTypeId, int guestId, int rateTypeId,  int guestTypeId) {
+        try {
+            if (Date.valueOf(checkInDate).after(Date.valueOf(checkOutDate))) {
+                throw new ValidationError(ValidationError.CHECKIN_DATE_HAS_TO_BE_BEFORE_CHECKOUT_DATE);
+            }
+            bookingDao.create(checkInDate, checkOutDate, adultsCount, childrenCount, comment, roomTypeId, guestId, rateTypeId, guestId, guestTypeId);
+        } catch (DAOException e) {
+            LOGGER.error("Error when calling the method create(): " + e.getMessage());
+        }
     }
 }

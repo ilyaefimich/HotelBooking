@@ -12,6 +12,15 @@ import java.time.Period;
 import java.util.ArrayList;
 import java.util.List;
 
+interface BookingDaoQueries {
+    String UPDATE_BOOKING = "UPDATE `web`.`booking`\n" +
+            "    SET \n" +
+            "            bookingStatusId = ?, \n" +
+            "            roomId = COALESCE(?, roomId), \n" +
+            "            price = COALESCE(?, price), \n" +
+            "            preferedpaymentmethodid = COALESCE(?, preferedpaymentmethodid) \n" +
+            "    WHERE bookingId = ?;";
+}
 
 public class BookingDaoImpl implements IBookingDao {
 
@@ -20,7 +29,7 @@ public class BookingDaoImpl implements IBookingDao {
     private static final String DELETE_BOOKING = "DELETE FROM `web`.`booking`\n" +
             "    WHERE bookingId = ?;";
 
-    private static final  String UPDATE_BOOKING = "UPDATE `web`.`booking`\n" +
+    private static final String UPDATE_BOOKING = "UPDATE `web`.`booking`\n" +
             "    SET \n" +
             "            bookingStatusId = ?, \n" +
             "            roomId = COALESCE(?, roomId), \n" +
@@ -28,40 +37,46 @@ public class BookingDaoImpl implements IBookingDao {
             "            preferedpaymentmethodid = COALESCE(?, preferedpaymentmethodid) \n" +
             "    WHERE bookingId = ?;";
 
-    private static final  String INSERT_BOOKING = "INSERT INTO `web`.`booking` (`checkInDate`, `checkOutDate`, `adultsCount`, `childrenCount`, `comment`, `bookingStatusId`, `roomTypeId`, `GuestId`, `rateTypeId`) " +
-            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?);";
+    private static final String INSERT_BOOKING = "INSERT INTO `web`.`booking` (`checkInDate`, `checkOutDate`, " +
+            "`adultsCount`, `childrenCount`, `comment`, `bookingStatusId`, `roomTypeId`, `GuestId`, `rateTypeId`, " +
+            "`guestTypeId`) " +
+            "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
-    private static final  String INSERT_PREFERRED_PAYMENT_METHOD = "INSERT INTO `web`.`preferedpaymentmethod` " +
+    private static final String INSERT_PREFERRED_PAYMENT_METHOD = "INSERT INTO `web`.`preferedpaymentmethod` " +
             "(`name`, `cardholderName`, `expirationDate`, `cardNumber`, `csvCode`, `paymentMethodId`) " +
             "VALUES (?, ?, ?, ?, ?, ?);";
 
-    private static final  String INSERT_ROOM_AVAILABILITY = "INSERT INTO `web`.`roomavailability` (`date`, `roomId`) " +
+    private static final String INSERT_ROOM_AVAILABILITY = "INSERT INTO `web`.`roomavailability` (`date`, `roomId`) " +
             "VALUES (?, ?);";
 
-    private static final  String SELECT_BOOKINGS =
-            "SELECT b.checkInDate, b.checkOutDate, b.adultsCount, b.roomTypeId, rt.name roomTypeName, b.bookingStatusId, bs.name bookingStatusName, \n" +
-                    "b.bookingId, b.childrenCount, b.comment, bs.name bookingStatusName, g.guestId, g.name guestName, g.mobile, g.email, g.address, \n" +
-                    "r.roomId, r.name roomName, r.roomStatusId, pm.PreferedpaymentMethodId, pm.name paymentMethodName, pi.PaymentInfoId, pi.sum, pi.transactionId, \n" +
-                    "pi.transactionDate, pi.transactionStatus, g.userId, b.price, rat.rateTypeId, rat.name, pm.cardholderName, pm.expirationDate, pm.cardNumber, pm.csvCode, pm.paymentMethodId \n" +
+    private static final String SELECT_BOOKINGS =
+            "SELECT b.checkInDate, b.checkOutDate, b.adultsCount, b.roomTypeId, rt.name roomTypeName, b" +
+                    ".bookingStatusId, bs.name bookingStatusName, \n" +
+                    "b.bookingId, b.childrenCount, b.comment, bs.name bookingStatusName, g.guestId, g.name guestName," +
+                    " g.mobile, g.email, g.address, \n" +
+                    "r.roomId, r.name roomName, r.roomStatusId, pm.PreferedpaymentMethodId, pm.name " +
+                    "paymentMethodName, pi.PaymentInfoId, pi.sum, pi.transactionId, \n" +
+                    "pi.transactionDate, pi.transactionStatus, g.userId, b.price, rat.rateTypeId, rat.name, pm" +
+                    ".cardholderName, pm.expirationDate, pm.cardNumber, pm.csvCode, pm.paymentMethodId, b.guestTypeId \n" +
                     "FROM booking b \n" +
                     "LEFT OUTER JOIN roomType rt ON rt.roomTypeId = b.roomTypeId \n" +
                     "LEFT OUTER JOIN bookingStatus bs ON bs.bookingStatusId = b.bookingStatusId \n" +
                     "LEFT OUTER JOIN guest g ON g.GuestId = b.GuestId \n" +
                     "LEFT OUTER JOIN room r ON r.roomId = b.roomId \n" +
-                    "LEFT OUTER JOIN PreferedpaymentMethod pm ON pm.PreferedpaymentMethodId = b.PreferedpaymentMethodId \n" +
+                    "LEFT OUTER JOIN PreferedpaymentMethod pm ON pm.PreferedpaymentMethodId = b" +
+                    ".PreferedpaymentMethodId \n" +
                     "LEFT OUTER JOIN ratetype rat ON rat.rateTypeId = b.rateTypeId \n" +
                     "LEFT OUTER JOIN paymentinfo pi ON pi.PaymentInfoId= b.PaymentInfoId \n";
 
-    private static final  String SELECT_BOOKING_BY_BOOKING_ID =
+    private static final String SELECT_BOOKING_BY_BOOKING_ID =
             "SELECT b.checkInDate, b.checkOutDate, b.roomId, b.price, b.PreferedpaymentMethodId " +
                     "FROM booking b \n" +
                     "WHERE b.bookingId = ?;";
 
 
-
-
     @Override
     public List<Booking> getBookings() throws DAOException {
+
         List<Booking> bookings = null;
 
         try {
@@ -116,6 +131,9 @@ public class BookingDaoImpl implements IBookingDao {
                             bookingStatus.setName(rs.getString(7));
                             booking.setBookingStatus(bookingStatus);
 
+                            GuestType guestType = new GuestType();
+                            guestType.setGuestTypeId(rs.getInt(36));
+                            booking.setGuestType(guestType);
 /*
                 PaymentInfo paymentInfo = new PaymentInfo();
                 paymentInfo.setPaymentInfoId(rs.getInt(22));
@@ -171,7 +189,8 @@ public class BookingDaoImpl implements IBookingDao {
     }
 
     @Override
-    public void create(String checkInDate, String checkOutDate, int adultsCount, int childrenCount, String comment, int roomTypeId, int guestId, int rateTypeId) throws DAOException {
+    public void create(String checkInDate, String checkOutDate, int adultsCount, int childrenCount, String comment,
+                       int roomTypeId, int guestId, int rateTypeId, int typeId, int guestTypeId) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
             try (PreparedStatement statement = connection.prepareStatement(INSERT_BOOKING)) {
                 statement.setDate(1, Date.valueOf(checkInDate));
@@ -183,6 +202,8 @@ public class BookingDaoImpl implements IBookingDao {
                 statement.setInt(7, roomTypeId);
                 statement.setInt(8, guestId);
                 statement.setInt(9, rateTypeId);
+                statement.setInt(10, guestTypeId);
+
 
                 statement.executeUpdate();
             }
@@ -193,12 +214,14 @@ public class BookingDaoImpl implements IBookingDao {
     }
 
     @Override
-    public void update(int bookingid, Integer roomId, int newStatus, Integer price, String cardholderName, String cardNumber, String ccvCode, String expirationDate, int paymentMethodId) throws DAOException {
+    public void update(int bookingid, Integer roomId, int newStatus, Integer price, String cardholderName,
+                       String cardNumber, String ccvCode, String expirationDate, int paymentMethodId) throws DAOException {
         try (Connection connection = ConnectionPool.getInstance().getConnection()) {
 
             int newId = -1;
             if (cardholderName != null) {
-                try (PreparedStatement statement = connection.prepareStatement(INSERT_PREFERRED_PAYMENT_METHOD, Statement.RETURN_GENERATED_KEYS)) {
+                try (PreparedStatement statement = connection.prepareStatement(INSERT_PREFERRED_PAYMENT_METHOD,
+                        Statement.RETURN_GENERATED_KEYS)) {
                     statement.setString(1, "");
                     statement.setString(2, cardholderName);
                     statement.setString(3, expirationDate);
@@ -213,7 +236,7 @@ public class BookingDaoImpl implements IBookingDao {
                     }
                 }
             }
-            try (PreparedStatement statement = connection.prepareStatement(UPDATE_BOOKING)) {
+            try (PreparedStatement statement = connection.prepareStatement(BookingDaoQueries.UPDATE_BOOKING)) {
                 statement.setInt(1, newStatus);
                 if (roomId != null) {
                     statement.setInt(2, roomId);

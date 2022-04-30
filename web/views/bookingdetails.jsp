@@ -94,6 +94,43 @@
             <vld:error errorMessage="${error}"/>
             <div class="block">
                 <h4 class="mb-3"><fmt:message key="page.booking_info"/></h4>
+
+                <div class="btn-group" id="guestType" data-toggle="buttons">
+                    <label class="btn btn-default">
+                        <input name="guestType" type="radio" class="toggle" value="1" required="required"
+                        <c:if test="${booking.getGuestType().guestTypeId == 1}">
+                               checked
+                        </c:if>
+                        ><fmt:message key="page.guestTypeLeisure"/>
+                    </label>
+                    <label class="btn btn-default">
+                        <input name="guestType" type="radio" class="toggle" value="2" required="required"
+                        <c:if test="${booking.getGuestType().guestTypeId == 2}">
+                               checked
+                        </c:if>
+                        ><fmt:message key="page.guestTypeBusiness"/>
+                    </label>
+                </div>
+
+<%--
+                 <div class="form-check">
+                    <input class="form-check-input" type="radio" name="guestType" id="guestTypeLeisure" value="1"
+                    <label class="form-check-label" for="guestTypeLeisure"
+                            <c:if test="${booking.getGuestType().guestTypeId == 2}">
+                                checked
+                            </c:if>
+                    >
+                        <fmt:message key="page.guestTypeLeisure"/>
+                    </label>
+                </div>
+
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="guestType" id="guestTypeBusiness" >
+                    <label class="form-check-label" for="guestTypeBusiness">
+                        <fmt:message key="page.guestTypeBusiness"/>
+                    </label>
+                </div>
+                --%>
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label for="checkin"><fmt:message key="page.booking_checkin"/></label>

@@ -9,7 +9,7 @@ import com.epam.jwd.finaltask.model.RoomType;
 import java.util.List;
 
 public interface IRoomDao {
-    List<Room> getAvailableRoomsByRoomTypeAndDates(int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate) throws DAOException;
+    List<Room> getAvailableRoomsByRoomTypeAndDates(int guestTypeId, int roomTypeId, int rateTypeId, String checkinDate, String checkoutDate) throws DAOException;
     List<RoomType> getRoomTypes() throws DAOException;
     List<RoomStatus> getRoomStatuses() throws DAOException;
     List<RateType> getRateTypesByRoomType(int roomTypeId) throws DAOException;

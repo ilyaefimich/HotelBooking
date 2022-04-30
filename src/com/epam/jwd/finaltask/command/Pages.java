@@ -12,6 +12,7 @@ public interface Pages {
     String HOME = "/index.jsp";
     String LOGIN = "/views/login.jsp";
     String REGISTRATION = "/views/registration.jsp";
+    String ROOMPRIORITIES = "/views/roompriorities.jsp";
 
 
 }

@@ -98,6 +98,11 @@ public enum CommandFactory {
         public AbstractCommand createCommand() {
             return new UpdateBookingCommand();
         }
+    },
+    CALCULATEROOMPRIORITY {
+        public AbstractCommand createCommand() {
+            return new CalculateRoomPriorityCommand();
+        }
     };
 
     public abstract AbstractCommand createCommand();

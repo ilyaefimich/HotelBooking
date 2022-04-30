@@ -21,6 +21,9 @@
                 <li class="nav-item">
                     <a class="nav-link" href="./controller?command=getrooms"><fmt:message key="page.rooms"/></a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="./views/roompriorities.jsp"><fmt:message key="page.roompriorities"/></a>
+                </li>
             </c:if>
         </ul>
         <form class="form-inline">

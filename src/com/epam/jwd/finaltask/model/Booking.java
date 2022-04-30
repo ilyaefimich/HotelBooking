@@ -1,10 +1,16 @@
 package com.epam.jwd.finaltask.model;
 
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 public class Booking implements Serializable {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int bookingId;
     private LocalDate checkInDate;
     private LocalDate checkOutDate;
@@ -20,6 +26,65 @@ public class Booking implements Serializable {
     private PaymentInfo paymentInfo;
     private int price;
     private RateType rateType;
+    private GuestType guestType;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Booking booking = (Booking) o;
+        return bookingId == booking.bookingId &&
+                adultsCount == booking.adultsCount &&
+                childrenCount == booking.childrenCount &&
+                price == booking.price &&
+                Objects.equals(checkInDate, booking.checkInDate) &&
+                Objects.equals(checkOutDate, booking.checkOutDate) &&
+                Objects.equals(comment, booking.comment) &&
+                Objects.equals(bookingStatus, booking.bookingStatus) &&
+                Objects.equals(roomType, booking.roomType) &&
+                Objects.equals(guest, booking.guest) &&
+                Objects.equals(offeredRoom, booking.offeredRoom) &&
+                Objects.equals(messages, booking.messages) &&
+                Objects.equals(preferedPaymentMethod, booking.preferedPaymentMethod) &&
+                Objects.equals(paymentInfo, booking.paymentInfo) &&
+                Objects.equals(rateType, booking.rateType);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(bookingId, checkInDate, checkOutDate, adultsCount, childrenCount, comment, bookingStatus,
+                roomType, guest, offeredRoom, messages, preferedPaymentMethod, paymentInfo, price, rateType, guestType);
+    }
+
+    @Override
+    public String toString() {
+        return "Booking{" +
+                "bookingId=" + bookingId +
+                ", checkInDate=" + checkInDate +
+                ", checkOutDate=" + checkOutDate +
+                ", adultsCount=" + adultsCount +
+                ", childrenCount=" + childrenCount +
+                ", comment='" + comment + '\'' +
+                ", bookingStatus=" + bookingStatus +
+                ", roomType=" + roomType +
+                ", guest=" + guest +
+                ", offeredRoom=" + offeredRoom +
+                ", messages=" + messages +
+                ", preferedPaymentMethod=" + preferedPaymentMethod +
+                ", paymentInfo=" + paymentInfo +
+                ", price=" + price +
+                ", rateType=" + rateType +
+                ", guestTypeId=" + guestType +
+                '}';
+    }
+
+    public GuestType getGuestType() {
+        return guestType;
+    }
+
+    public void setGuestType(GuestType guestType) {
+        this.guestType = guestType;
+    }
 
     public  RateType getRateType() {
         return rateType;
@@ -75,11 +140,6 @@ public class Booking implements Serializable {
 
     public void setPaymentInfo(PaymentInfo paymentInfo) {
         this.paymentInfo = paymentInfo;
-    }
-
-    @Override
-    public String toString() {
-        return checkInDate.toString() + "-" + checkOutDate.toString() + "-" + adultsCount + "Adult" + "-" + roomType.getName()+ "-" + bookingStatus.getName();
     }
 
     public int getBookingId() {
